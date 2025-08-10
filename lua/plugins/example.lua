@@ -5,6 +5,21 @@ if true then return {
   { "cpea2506/one_monokai.nvim" },
   -- Configure LazyVim to load gruvbox
   {
+    "petertriho/nvim-scrollbar",
+    config = function()
+      require("scrollbar").setup({
+        show = true,
+        set_highlights = true,
+        handle = {
+          text = " ",
+          color = "#555555", -- optional: change color
+          highlight = "ScrollbarHandle",
+        },
+      })
+    end,
+  },
+
+  {
     "LazyVim/LazyVim",
     opts = {
       colorscheme = "one_monokai",
