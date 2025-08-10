@@ -1,6 +1,8 @@
 -- since this is just an example spec, don't actually load anything here and return an empty spec
 -- stylua: ignore
 if true then return {
+  -- disabling new tree
+  { "nvim-neo-tree/neo-tree.nvim", enabled = false },
   -- add gruvbox
   { "cpea2506/one_monokai.nvim" },
   -- Configure LazyVim to load gruvbox
