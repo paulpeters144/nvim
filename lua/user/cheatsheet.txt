@@ -1,0 +1,27 @@
+    📘 Cheatsheet:
+
+          Basic Movement        |         Line & Word         
+    ----------------------------|------------------------------
+    h: Left                     | 0: Beginning of line         
+    j: Down                     | ^: First non-blank char      
+    k: Up                       | $: End of line               
+    l: Right                    | w: Beginning of next word    
+                                | b: Beginning of previous word
+                                | e: End of current word       
+
+        File & Screen         |     Combined with Count      
+    ----------------------------|------------------------------
+    gg: Top of file             | 5j: Move down 5 lines        
+    G: Bottom of file           | 10k: Move up 10 lines        
+    H: Top of screen            | 3w: Move forward 3 words     
+    M: Middle of screen         | 15G: Go to line 15           
+    L: Bottom of screen         |                              
+    Ctrl-f: Scroll down 1 page  |                              
+    Ctrl-b: Scroll up 1 page    |                              
+    Ctrl-d: Scroll down 1/2 p.  |                              
+    Ctrl-u: Scroll up 1/2 p.    |                              
+
+    Undo & Redo Commands
+    --------------------
+    u            Undo last change (Normal mode)
+    Ctrl-r       Redo undone change (Normal mode)
