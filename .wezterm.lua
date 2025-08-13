@@ -15,7 +15,10 @@ config.animation_fps = 1
 config.cursor_blink_rate = 500
 config.term = "xterm-256color" -- Set the terminal type
 
--- config.font = wezterm.font("Iosevka Custom")
+-- turns off ligatures
+config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+
+config.font = wezterm.font("JetBrainsMono Nerd Font Mono")
 -- config.font = wezterm.font("Monocraft Nerd Font")
 -- config.font = wezterm.font("FiraCode Nerd Font Mono")
 -- config.font = wezterm.font("JetBrains Mono Regular")
