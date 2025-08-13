@@ -6,5 +6,8 @@ return {
       "github:mason-org/mason-registry",
       "github:Crashdummyy/mason-registry",
     }
+    opts.ensure_installed = {
+      "shellcheck",
+    }
   end,
 }

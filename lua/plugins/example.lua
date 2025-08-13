@@ -3,8 +3,7 @@
 if true then return {
   -- disabling new tree
   { "nvim-neo-tree/neo-tree.nvim", enabled = false },
-  -- add gruvbox
-  { "cpea2506/one_monokai.nvim" },
+
   -- Configure LazyVim to load gruvbox
   {
     "petertriho/nvim-scrollbar",
@@ -21,13 +20,17 @@ if true then return {
     end,
   },
 
+  { "askfiy/visual_studio_code" },
   {
-    "LazyVim/LazyVim",
-    opts = {
-      colorscheme = "one_monokai",
-    },
+    "askfiy/visual_studio_code",
+    config = function()
+        vim.cmd([[colorscheme visual_studio_code]])
+    end,
   },
-
+  {
+   "sphamba/smear-cursor.nvim",
+    opts = {},
+  },
 } end
 
 -- every spec file under the "plugins" directory will be loaded automatically by lazy.nvim
