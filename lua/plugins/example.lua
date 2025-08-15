@@ -19,13 +19,67 @@ if true then return {
       })
     end,
   },
-
-  { "askfiy/visual_studio_code" },
+  -- {"stanvirtin/monokai.nvim"},
+  -- {
+  --   "LazyVim/LazyVim",
+  --   opts = {
+  --     colorscheme = "monokai",
+  --   },
+  -- },
+  -- {"sekke276/dark_flat.nvim"},
+  -- {
+  --   "LazyVim/LazyVim",
+  --   opts = {
+  --     colorscheme = "dark_flat",
+  --   },
+  -- },
+  -- {
+  --   "cpea2506/one_monokai.nvim",
+  -- },
+  -- {
+  --   "LazyVim/LazyVim",
+  --   opts = {
+  --     colorscheme = "one_monokai",
+  --   },
+  -- },
+  -- { "alexmozaidze/palenight.nvim" },
+  -- {
+  --   "LazyVim/LazyVim",
+  --   opts = {
+  --     colorscheme = "palenight",
+  --   },
+  -- },
+  -- {
+  --   "navarasu/onedark.nvim",
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   config = function()
+  --     require('onedark').setup {
+  --       style = 'darker'
+  --     }
+  --     -- Enable theme
+  --     require('onedark').load()
+  --   end
+  -- },
+  -- {
+  --   "LazyVim/LazyVim",
+  --   opts = {
+  --     colorscheme = "onedark",
+  --   },
+  -- },
   {
-    "askfiy/visual_studio_code",
+    'sainnhe/sonokai',
+    lazy = false,
+    priority = 1000,
     config = function()
-        vim.cmd([[colorscheme visual_studio_code]])
-    end,
+      vim.g.sonokai_style = 'shusia'
+      vim.cmd.colorscheme('sonokai')
+    end
+  },
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "sonokai",
+    },
   },
   {
    "sphamba/smear-cursor.nvim",
