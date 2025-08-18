@@ -1,6 +1,32 @@
 -- since this is just an example spec, don't actually load anything here and return an empty spec
 -- stylua: ignore
 if true then return {
+  {
+    "nvim-telescope/telescope.nvim",
+    keys = {
+      -- add a keymap to browse plugin files
+      -- stylua: ignore
+      {
+        "<leader>fp",
+        function() require("telescope.builtin").find_files({ cwd = require("lazy.core.config").options.root }) end,
+        desc = "Find Plugin File",
+      },
+    },
+    -- change some options
+    opts = {
+      defaults = {
+        layout_strategy = "horizontal",
+        layout_config = {
+          prompt_position = "top",
+          height = 0.6, -- 60% of screen height
+          width = 0.9,  -- 90% of screen width
+        },
+        sorting_strategy = "ascending",
+        winblend = 0,
+      },
+    },
+  },
+  { "akinsho/bufferline.nvim", enabled = false },
   -- disabling new tree
   { "nvim-neo-tree/neo-tree.nvim", enabled = false },
 
