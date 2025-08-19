@@ -27,8 +27,8 @@ if true then return {
     },
   },
   { "akinsho/bufferline.nvim", enabled = false },
-  -- disabling new tree
-  { "nvim-neo-tree/neo-tree.nvim", enabled = false },
+  -- disabling neo tree
+  -- { "nvim-neo-tree/neo-tree.nvim", enabled = false },
 
   -- Configure LazyVim to load gruvbox
   {

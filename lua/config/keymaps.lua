@@ -10,8 +10,8 @@ vim.keymap.set("n", "<C-f>", "<C-f>zz")
 vim.keymap.set("n", "<C-b>", "<C-b>zz")
 vim.keymap.set("n", "Y", "yy")
 
-vim.keymap.del("n", "<leader>e")
-vim.keymap.del("n", "<leader>E")
+-- vim.keymap.del("n", "<leader>e")
+-- vim.keymap.del("n", "<leader>E")
 
 
 -- -- Leaving this here as an example in case you want to delete default keymaps
