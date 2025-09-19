@@ -14,6 +14,8 @@ vim.keymap.set('n', '<leader>bl', ':b#<CR>', { desc = '[B]uffer [L]ast' }) -- Cl
 vim.keymap.set('n', '<leader>bc', ':bdelete<CR>', { desc = '[B]uffer [C]lose' })
 vim.keymap.set('n', '<leader>bq', ':bufdo bdelete<CR>', { desc = '[B]uffer [Q]uit all others' })
 
+vim.keymap.set('n', '<leader>tt', '<cmd>ToggleTerm<CR>', { desc = 'Toggle Terminal' })
+
 vim.keymap.set('n', '<C-b>', '<C-v>', { desc = 'Visual block mode' })
 
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
