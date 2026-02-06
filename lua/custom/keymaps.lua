@@ -11,7 +11,20 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.keymap.set('n', '<leader>bn', ':bnext<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bp', ':bprevious<CR>', { desc = '[B]uffer [P]revious' })
 vim.keymap.set('n', '<leader>bl', ':b#<CR>', { desc = '[B]uffer [L]ast' }) -- Close the current buffer
-vim.keymap.set('n', '<leader>bc', ':bdelete<CR>', { desc = '[B]uffer [C]lose' })
+vim.keymap.set('n', '<leader>bc', function()
+  local bd = require('mini.bufremove').delete
+  if vim.bo.modified then
+    local choice = vim.fn.confirm(('Save changes to %q?'):format(vim.fn.bufname()), '&Yes\n&No\n&Cancel')
+    if choice == 1 then
+      vim.cmd.write()
+      bd(0, false)
+    elseif choice == 2 then
+      bd(0, true)
+    end
+  else
+    bd(0, false)
+  end
+end, { desc = '[B]uffer [C]lose' })
 vim.keymap.set('n', '<leader>bq', ':bufdo bdelete<CR>', { desc = '[B]uffer [Q]uit all others' })
 
 vim.keymap.set('n', '<leader>tt', '<cmd>ToggleTerm<CR>', { desc = 'Toggle Terminal' })

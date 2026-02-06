@@ -43,6 +43,7 @@ return {
         { '<leader>s', group = 'search' },
         { '<leader>t', group = 'toggle' },
         { '<leader>h', group = 'git hunk', mode = { 'n', 'v' } },
+        { '<leader>g', group = 'git' },
         { '<leader>b', group = 'buffer management' },
         { '<leader>w', group = 'window management' },
         { '<leader>q', group = 'session management' },

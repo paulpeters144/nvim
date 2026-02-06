@@ -39,7 +39,7 @@ return {
       -- Split windows
       vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Window Vertical split' }) -- Split vertically
       vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = 'Window Horizontal split' }) -- Split horizontally
-      vim.keymap.set('n', '<leader>wd', '<C-w>c', { desc = 'Window Quit' }) -- Close current window
+      vim.keymap.set('n', '<leader>wd', '<C-w>c<C-w>=', { desc = 'Window Quit and Realign' }) -- Close current window
 
       vim.keymap.set('n', '<leader>/', function()
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
