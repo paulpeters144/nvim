@@ -39,11 +39,6 @@ return {
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.find_files, { desc = '  Find existing buffers' })
 
-      -- Split windows
-      vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Window Vertical split' }) -- Split vertically
-      vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = 'Window Horizontal split' }) -- Split horizontally
-      vim.keymap.set('n', '<leader>wd', '<C-w>c<C-w>=', { desc = 'Window Quit and Realign' }) -- Close current window
-
       vim.keymap.set('n', '<leader>/', function()
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,

@@ -7,7 +7,7 @@ return {
       -- other toggleterm setup options as needed
       -- for example:
       size = 20,
-      direction = 'float', -- or 'float' etc
+      direction = 'horizontal', -- or 'float' etc
       -- ...
     },
     config = function(_, opts)
