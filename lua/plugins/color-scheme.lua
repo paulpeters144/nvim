@@ -1,11 +1,10 @@
 return {
   {
-    'tanvirtin/monokai.nvim',
+    'neko-night/nvim',
     lazy = false,
     priority = 1000,
     config = function()
-      require('monokai').setup {}
-      vim.cmd.colorscheme 'monokai'
+      vim.cmd.colorscheme 'nekonight-storm'
     end,
   },
 }
