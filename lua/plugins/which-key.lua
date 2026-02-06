@@ -38,15 +38,41 @@ return {
         },
       },
 
+      -- Documented options for better UI
+      preset = 'modern',
+      win = {
+        border = 'rounded',
+        padding = { 1, 2 }, -- [top, right, bottom, left]
+        title = ' Shortcuts ',
+        title_pos = 'center',
+        zindex = 1000,
+        wo = {
+          winblend = 10, -- Slight transparency
+        },
+      },
+      layout = {
+        width = { min = 20, max = 50 },
+        spacing = 3,
+        align = 'left',
+      },
+      plugins = {
+        marks = true, -- shows a list of your marks on ' and `
+        registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+        spelling = {
+          enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+          suggestions = 20, -- how many suggestions should be shown in the list?
+        },
+      },
+
       spec = {
-        { '<leader>c', group = 'code' },
-        { '<leader>s', group = 'search' },
-        { '<leader>t', group = 'toggle' },
-        { '<leader>h', group = 'git hunk', mode = { 'n', 'v' } },
-        { '<leader>g', group = 'git' },
-        { '<leader>b', group = 'buffer management' },
-        { '<leader>w', group = 'window management' },
-        { '<leader>q', group = 'session management' },
+        { '<leader>c', group = 'Code', icon = '📝' },
+        { '<leader>s', group = 'Search', icon = '🔍' },
+        { '<leader>t', group = 'Toggle', icon = '🔧' },
+        { '<leader>h', group = 'Git Hunk', mode = { 'n', 'v' }, icon = '⚓' },
+        { '<leader>g', group = 'Git', icon = '🏷️' },
+        { '<leader>b', group = 'Buffer', icon = '📖' },
+        { '<leader>w', group = 'Window', icon = '🪟' },
+        { '<leader>q', group = 'Session', icon = '💾' },
       },
     },
   },
