@@ -80,6 +80,7 @@ vim.keymap.set('n', '<S-h>', function()
   require('telescope.builtin').buffers(require('telescope.themes').get_ivy {
     sort_mru = true,
     sort_lastused = false,
+    path_display = { 'smart' },
     initial_mode = 'normal',
     layout_config = {
       height = 45, -- number of lines tall (you can also try 0.5 for 50% of screen)
