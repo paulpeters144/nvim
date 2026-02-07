@@ -15,7 +15,7 @@ vim.keymap.set('n', '<leader>wd', '<C-w>c<C-w>=', { desc = '[W]indow [D]elete' }
 vim.keymap.set('n', '<leader>bn', ':bnext<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bp', ':bprevious<CR>', { desc = '[B]uffer [P]revious' })
 vim.keymap.set('n', '<leader>bl', ':b#<CR>', { desc = '[B]uffer [L]ast' }) -- Close the current buffer
-vim.keymap.set('n', '<leader>bc', function()
+vim.keymap.set('n', '<leader>bd', function()
   local bd = require('mini.bufremove').delete
   if vim.bo.modified then
     local choice = vim.fn.confirm(('Save changes to %q?'):format(vim.fn.bufname()), '&Yes\n&No\n&Cancel')
@@ -28,7 +28,7 @@ vim.keymap.set('n', '<leader>bc', function()
   else
     bd(0, false)
   end
-end, { desc = '[B]uffer [C]lose' })
+end, { desc = '[B]uffer [D]elete' })
 vim.keymap.set('n', '<leader>bq', ':bufdo bdelete<CR>', { desc = '[B]uffer [Q]uit all others' })
 
 vim.keymap.set('n', '<leader>tt', '<cmd>ToggleTerm<CR>', { desc = 'Toggle Terminal' })

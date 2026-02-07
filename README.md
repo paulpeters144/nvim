@@ -33,7 +33,7 @@ The leader key is set to `<Space>`.
 ### Buffers
 - `<leader>bn`: Next buffer.
 - `<leader>bp`: Previous buffer.
-- `<leader>bc`: Close current buffer (with save confirmation).
+- `<leader>bd`: Delete current buffer (with save confirmation).
 - `<S-h>`: Open Telescope buffer switcher.
 
 ### Search (Telescope)
