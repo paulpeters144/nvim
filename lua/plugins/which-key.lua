@@ -65,6 +65,7 @@ return {
       },
 
       spec = {
+        { '<leader>a', group = 'AI', icon = '🤖' },
         { '<leader>c', group = 'Code', icon = '📝' },
         { '<leader>s', group = 'Search', icon = '🔍' },
         { '<leader>t', group = 'Toggle', icon = '🔧' },
