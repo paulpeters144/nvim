@@ -4,6 +4,7 @@ return {
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-treesitter/nvim-treesitter',
+      'j-hui/fidget.nvim',
     },
     config = function()
       local selected_model = 'gemini-3-flash-preview'
@@ -31,6 +32,36 @@ return {
           },
         },
       }
+
+      -- Fidget integration
+      local progress = require('fidget.progress')
+      local progress_handle = nil
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'CodeCompanionRequestStarted',
+        callback = function()
+          if progress_handle then
+            progress_handle.message = 'Thinking...'
+          else
+            progress_handle = progress.handle.create({
+              title = 'CodeCompanion',
+              message = 'Thinking...',
+              lsp_client = { name = 'Gemini' },
+              percentage = 0,
+            })
+          end
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'CodeCompanionRequestFinished',
+        callback = function()
+          if progress_handle then
+            progress_handle:finish()
+            progress_handle = nil
+          end
+        end,
+      })
 
       vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'AI [C]hat' })
       vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { desc = 'AI [A]ctions' })
