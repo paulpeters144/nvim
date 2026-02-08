@@ -74,6 +74,7 @@ return {
         { '<leader>b', group = 'Buffer', icon = '📖' },
         { '<leader>w', group = 'Window', icon = '🪟' },
         { '<leader>q', group = 'Session', icon = '💾' },
+        { '<leader>o', group = 'Octo', icon = '🐙' },
       },
     },
   },
