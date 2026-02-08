@@ -64,6 +64,15 @@ return {
       })
 
       vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'AI [C]hat' })
+      vim.keymap.set({ 'n', 'v' }, '<leader>ar', function()
+        local bufs = vim.api.nvim_list_bufs()
+        for _, buf in ipairs(bufs) do
+          if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_get_option_value('filetype', { buf = buf }) == 'codecompanion' then
+            vim.api.nvim_buf_delete(buf, { force = true })
+          end
+        end
+        vim.cmd('CodeCompanionChat Add')
+      end, { desc = 'AI [R]eset (Clear All)' })
       vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { desc = 'AI [A]ctions' })
 
       -- AI Edit (Inline)
