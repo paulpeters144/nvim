@@ -35,6 +35,7 @@ return {
           map('<leader>co', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
           map('<leader>cw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
           map('<leader>ct', require('telescope.builtin').lsp_type_definitions, 'Type Definition')
+          map('<leader>ch', vim.lsp.buf.hover, 'Hover Documentation')
           map('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
 
           ---@param client vim.lsp.Client
