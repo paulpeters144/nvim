@@ -79,14 +79,14 @@ return {
     {
       '<leader>dh',
       function()
-        require('dap.ui.widgets').hover()
+        require('dapui').eval()
       end,
       desc = 'Debug: Hover',
     },
     {
       '<leader>de',
       function()
-        require('dapui').eval(nil, { enter = true })
+        require('dapui').eval(nil, { enter = true, width = vim.o.columns })
       end,
       desc = 'Debug: Eval',
     },
@@ -173,6 +173,14 @@ return {
           run_last = '▶▶',
           terminate = '⏹',
           disconnect = '⏏',
+        },
+      },
+      floating = {
+        max_height = 0.9,
+        max_width = 0.9, -- 90% of screen width
+        border = 'rounded',
+        mappings = {
+          close = { 'q', '<Esc>' },
         },
       },
     }

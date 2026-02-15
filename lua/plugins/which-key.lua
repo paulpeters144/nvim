@@ -67,6 +67,7 @@ return {
       spec = {
         { '<leader>a', group = 'AI', icon = '🤖' },
         { '<leader>c', group = 'Code', icon = '📝' },
+        { '<leader>d', group = 'Debug', icon = '🐞' },
         { '<leader>s', group = 'Search', icon = '🔍' },
         { '<leader>t', group = 'Toggle', icon = '🔧' },
         { '<leader>h', group = 'Git Hunk', mode = { 'n', 'v' }, icon = '⚓' },
@@ -75,6 +76,7 @@ return {
         { '<leader>w', group = 'Window', icon = '🪟' },
         { '<leader>q', group = 'Session', icon = '💾' },
         { '<leader>o', group = 'Octo', icon = '🐙' },
+        { '<leader>r', group = 'Rust', icon = '🦀' },
       },
     },
   },
