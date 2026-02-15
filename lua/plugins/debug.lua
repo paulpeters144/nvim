@@ -77,6 +77,20 @@ return {
       desc = 'Debug: Toggle UI (F7)',
     },
     {
+      '<leader>dh',
+      function()
+        require('dap.ui.widgets').hover()
+      end,
+      desc = 'Debug: Hover',
+    },
+    {
+      '<leader>de',
+      function()
+        require('dapui').eval(nil, { enter = true })
+      end,
+      desc = 'Debug: Eval',
+    },
+    {
       '<F5>',
       function()
         require('dap').continue()
@@ -123,7 +137,14 @@ return {
 
       -- You can provide additional configuration to the handlers,
       -- see mason-nvim-dap README for more information
-      handlers = {},
+      handlers = {
+        function(config)
+          require('mason-nvim-dap').default_setup(config)
+        end,
+        codelldb = function()
+          -- rustaceanvim handles this
+        end,
+      },
 
       -- You'll need to check that you have the required things installed
       -- online, please don't ask me how to install them :)
@@ -181,29 +202,6 @@ return {
       },
     }
 
-    -- Rust specific config
-    dap.configurations.rust = {
-      {
-        name = 'Launch',
-        type = 'codelldb',
-        request = 'launch',
-        program = function()
-          local cwd = vim.fn.getcwd()
-          local debug_dir = cwd .. '/target/debug/'
-          -- Find all .exe files in the target/debug directory
-          local files = vim.fn.glob(debug_dir .. '*.exe', false, true)
 
-          -- If we find exactly one executable, return it
-          if #files == 1 then
-            return files[1]
-          end
-
-          -- Otherwise request input (providing the first found file as a hint if available)
-          return vim.fn.input('Path to executable: ', files[1] or debug_dir, 'file')
-        end,
-        cwd = '${workspaceFolder}',
-        stopOnEntry = false,
-      },
-    }
   end,
 }
