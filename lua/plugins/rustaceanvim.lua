@@ -31,11 +31,17 @@ return {
     },
   },
   config = function(_, opts)
-    -- Windows-specific path configuration
-    local mason_path = vim.fn.stdpath('data') .. '/mason/packages/codelldb/extension/'
-    local extension_path = mason_path:gsub('/', '\\')
-    local codelldb_path = extension_path .. 'adapter\\codelldb.exe'
-    local liblldb_path = extension_path .. 'lldb\\bin\\liblldb.dll'
+    local mason_path = vim.fn.stdpath 'data' .. '/mason/packages/codelldb/extension/'
+    local codelldb_path, liblldb_path
+
+    if vim.fn.has 'win32' == 1 then
+      local extension_path = mason_path:gsub('/', '\\')
+      codelldb_path = extension_path .. 'adapter\\codelldb.exe'
+      liblldb_path = extension_path .. 'lldb\\bin\\liblldb.dll'
+    else
+      codelldb_path = mason_path .. 'adapter/codelldb'
+      liblldb_path = mason_path .. 'lldb/lib/liblldb.dylib'
+    end
 
     -- If the file exists, configure the adapter
     if vim.fn.filereadable(codelldb_path) == 1 and vim.fn.filereadable(liblldb_path) == 1 then
