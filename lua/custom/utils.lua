@@ -58,8 +58,9 @@ end
 
 ---Smart chat: toggle or create chat with selection/context
 function M.smart_chat(prompt, prefix, is_visual)
-  -- Capture filetype before any window changes
+  -- Capture filetype and buffer content before any window changes
   local source_ft = vim.bo.filetype
+  local source_buf = vim.api.nvim_get_current_buf()
   local selection = nil
 
   if is_visual then
@@ -68,13 +69,18 @@ function M.smart_chat(prompt, prefix, is_visual)
     local start_line = vim.fn.line "'<"
     local end_line = vim.fn.line "'>"
     if start_line > 0 and end_line > 0 then
-      local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+      local lines = vim.api.nvim_buf_get_lines(source_buf, start_line - 1, end_line, false)
       selection = table.concat(lines, '\n')
     end
   end
 
+  local full_buffer = table.concat(vim.api.nvim_buf_get_lines(source_buf, 0, -1, false), '\n')
+
   vim.ui.input({ prompt = prompt }, function(input)
-    if not input or input == '' then
+    if input == '' then
+      input = is_visual and 'Explain the selected code.' or 'Explain this line of code.'
+      input = (prefix or '') .. input
+    elseif not input then
       return
     end
 
@@ -87,14 +93,25 @@ function M.smart_chat(prompt, prefix, is_visual)
       end
     end
 
-    local final_input = (prefix or '') .. input
+    local final_input = input
 
     if chat_win then
       vim.api.nvim_set_current_win(chat_win)
       local chat_buf = vim.api.nvim_win_get_buf(chat_win)
 
       local lines_to_add = { '', '---', '' }
-      if selection then
+
+      -- Always include the full buffer content for context if appending to existing chat
+      table.insert(lines_to_add, 'Context from buffer (' .. source_ft .. '):')
+      table.insert(lines_to_add, '```' .. source_ft)
+      for _, line in ipairs(vim.split(full_buffer, '\n')) do
+        table.insert(lines_to_add, line)
+      end
+      table.insert(lines_to_add, '```')
+      table.insert(lines_to_add, '')
+
+      if is_visual and selection then
+        table.insert(lines_to_add, 'Selection:')
         table.insert(lines_to_add, '```' .. source_ft)
         for _, line in ipairs(vim.split(selection, '\n')) do
           table.insert(lines_to_add, line)
@@ -102,6 +119,7 @@ function M.smart_chat(prompt, prefix, is_visual)
         table.insert(lines_to_add, '```')
         table.insert(lines_to_add, '')
       end
+
       table.insert(lines_to_add, final_input)
 
       local last_line = vim.api.nvim_buf_line_count(chat_buf)
@@ -115,7 +133,7 @@ function M.smart_chat(prompt, prefix, is_visual)
     else
       if is_visual then
         -- Since we exited visual mode, marks are set for the current selection
-        vim.cmd("'<,'>CodeCompanionChat " .. final_input)
+        vim.cmd("'<,'>CodeCompanionChat #{buffer} " .. final_input)
       else
         vim.cmd('CodeCompanionChat #{buffer} ' .. final_input)
       end
@@ -125,6 +143,42 @@ function M.smart_chat(prompt, prefix, is_visual)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-s>', true, false, true), 'm', false)
       end, 300)
     end
+  end)
+end
+
+---AI Edit: unified edit function with buffer context and selection awareness
+function M.ai_edit(is_visual)
+  local start_line, end_line
+  if is_visual then
+    -- Exit visual mode to update marks
+    vim.cmd 'normal! \27'
+    start_line = vim.fn.line "'<"
+    end_line = vim.fn.line "'>"
+  else
+    start_line = vim.fn.line '.'
+    end_line = start_line
+  end
+
+  -- Ensure we have a valid range
+  if start_line == 0 or end_line == 0 then
+    start_line = vim.fn.line '.'
+    end_line = start_line
+  end
+
+  local prompt_label = is_visual and 'AI Edit (Selection): ' or ('AI Edit (Line ' .. start_line .. '): ')
+
+  vim.ui.input({
+    prompt = prompt_label,
+    default = is_visual and '' or 'implement: ',
+  }, function(input)
+    if not input or input == '' then
+      return
+    end
+
+    local final_prompt = input .. ' (Strict: Return ONLY code, no markdown, match indent, return COMPLETE functions/blocks)'
+    local range = start_line == end_line and tostring(start_line) or (start_line .. ',' .. end_line)
+
+    vim.cmd(range .. 'CodeCompanion #{buffer} ' .. final_prompt)
   end)
 end
 

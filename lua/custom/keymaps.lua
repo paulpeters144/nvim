@@ -6,7 +6,13 @@ vim.keymap.set('n', '-', '<cmd>Oil<cr>', { desc = 'Open parent directory' })
 vim.keymap.set('n', 'Y', 'yy', { desc = 'Yank whole line' })
 
 -- Diagnostics
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show line [E]rror diagnostics' })
+vim.keymap.set('n', '<leader>e', function()
+  vim.diagnostic.open_float { focus = true, scope = 'line' }
+  -- If focus is still not working, try a second attempt with a small delay
+  vim.defer_fn(function()
+    vim.diagnostic.open_float { focus = true, scope = 'line' }
+  end, 100)
+end, { desc = 'Show line [E]rror diagnostics' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- [[ Movement & Visual ]]
@@ -135,14 +141,11 @@ vim.keymap.set({ 'n', 'v' }, '<leader>ar', function()
   vim.cmd 'CodeCompanionChat Add'
 end, { desc = '[A]I [R]eset Chat' })
 vim.keymap.set('n', '<leader>ae', function()
-  local line_num = vim.fn.line '.'
-  vim.ui.input({ prompt = 'AI Edit (Line ' .. line_num .. '): ' }, function(input)
-    if input and input ~= '' then
-      vim.cmd('CodeCompanion #{buffer} At line ' .. line_num .. ': ' .. input)
-    end
-  end)
+  utils.ai_edit(false)
 end, { desc = '[A]I [E]dit (Buffer)' })
-vim.keymap.set('v', '<leader>ae', '<cmd>CodeCompanion<cr>', { desc = '[A]I [E]dit (Selection)' })
+vim.keymap.set('v', '<leader>ae', function()
+  utils.ai_edit(true)
+end, { desc = '[A]I [E]dit (Selection)' })
 
 -- [[ Git (Octo) ]]
 vim.keymap.set('n', '<leader>op', '<cmd>Octo pr list<cr>', { desc = '[O]cto [P]R list' })
