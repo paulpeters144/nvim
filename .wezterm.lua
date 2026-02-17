@@ -169,8 +169,6 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
   }
 end)
 
-if wezterm.target_triple:find 'windows' then
-  config.default_prog = { 'powershell.exe', '-NoLogo' }
-end
+config.default_prog = { 'powershell.exe', '-NoLogo' }
 
 return config
