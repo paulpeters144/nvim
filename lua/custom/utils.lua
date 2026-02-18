@@ -77,12 +77,14 @@ function M.smart_chat(prompt, prefix, is_visual)
   local full_buffer = table.concat(vim.api.nvim_buf_get_lines(source_buf, 0, -1, false), '\n')
 
   vim.ui.input({ prompt = prompt }, function(input)
-    if input == '' then
-      input = is_visual and 'Explain the selected code.' or 'Explain this line of code.'
-      input = (prefix or '') .. input
-    elseif not input then
+    if not input then
       return
     end
+
+    if input == '' then
+      input = 'Explain'
+    end
+    input = (prefix or '') .. input
 
     local chat_win = nil
     for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -169,10 +171,14 @@ function M.ai_edit(is_visual)
 
   vim.ui.input({
     prompt = prompt_label,
-    default = is_visual and '' or 'implement: ',
+    default = '',
   }, function(input)
-    if not input or input == '' then
+    if not input then
       return
+    end
+
+    if input == '' then
+      input = 'implement'
     end
 
     local final_prompt = input .. ' (Strict: Return ONLY code, no markdown, match indent, return COMPLETE functions/blocks)'
