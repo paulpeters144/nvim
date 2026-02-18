@@ -28,7 +28,11 @@ return {
           --   end,
           -- },
         },
-        opts = {},
+        opts = {
+          history = false,
+          region_check_events = 'InsertEnter',
+          delete_check_events = 'InsertLeave',
+        },
       },
       'folke/lazydev.nvim',
     },
@@ -37,6 +41,24 @@ return {
     opts = {
       keymap = {
         preset = 'default',
+        ['<Tab>'] = {
+          function(cmp)
+            if cmp.is_visible() then
+              return cmp.select_next()
+            end
+          end,
+          'snippet_forward',
+          'fallback',
+        },
+        ['<S-Tab>'] = {
+          function(cmp)
+            if cmp.is_visible() then
+              return cmp.select_prev()
+            end
+          end,
+          'snippet_backward',
+          'fallback',
+        },
       },
 
       appearance = {
