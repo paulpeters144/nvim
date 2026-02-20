@@ -23,6 +23,19 @@ return {
         })
       end
 
+      local function get_inline_adapter()
+        return require('codecompanion.adapters').extend('gemini', {
+          env = {
+            api_key = 'GEMINI_API_KEY',
+          },
+          schema = {
+            model = {
+              default = 'gemini-2.0-flash',
+            },
+          },
+        })
+      end
+
       require('codecompanion').setup {
         display = {
           chat = {
@@ -48,26 +61,29 @@ return {
         strategies = {
           chat = {
             adapter = get_adapter,
+            opts = {
+              system_prompt = [[You are a senior software engineer.
+Just answer the user's question or perform the requested task.
+DO NOT provide any follow-up questions, suggestions, or 'example direction prompts' like 'Do you want to explore...', 'Would you prefer to...', or 'What would you like to do next?'.
+Stop immediately after your response.]],
+            },
           },
           inline = {
-            adapter = get_adapter,
+            adapter = get_inline_adapter,
+            opts = {
+              system_prompt = [[You are a senior software engineer.
+Just answer the user's question or perform the requested task.
+DO NOT provide any follow-up questions, suggestions, or 'example direction prompts' like 'Do you want to explore...', 'Would you prefer to...', or 'What would you like to do next?'.
+Stop immediately after your response.]],
+            },
           },
         },
         opts = {
-          system_prompt = [[You are a versatile AI assistant for developers.
-Your goal is to help the developer understand, write, and refactor code effectively.
-
-When providing code:
-1. Ensure correctness and follow the project's style.
-2. Always return complete, functional code blocks unless a snippet is specifically requested.
-3. Match the file's indentation and naming conventions.
-
-When explaining:
-1. Be concise but thorough.
-2. Focus on the "why" as much as the "how".
-
-General Rules:
-1. DO NOT suggest the next prompt.]],
+          system_prompt = [[You are a senior software engineer.
+Just answer the user's question or perform the requested task.
+DO NOT provide any follow-up questions, suggestions, or 'example direction prompts' like 'Do you want to explore...', 'Would you prefer to...', or 'What would you like to do next?'.
+Just answer the question and then stop immediately.
+No conversational filler or guiding questions after the primary response.]],
         },
       }
 

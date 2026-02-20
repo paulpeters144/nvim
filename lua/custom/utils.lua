@@ -181,7 +181,7 @@ function M.ai_edit(is_visual)
       input = 'implement'
     end
 
-    local final_prompt = input .. ' (Strict: Return ONLY code, no markdown, match indent, return COMPLETE functions/blocks)'
+    local final_prompt = input .. ' (Return the code in a markdown code block. Match indentation. Return COMPLETE functions/blocks)'
     local range = start_line == end_line and tostring(start_line) or (start_line .. ',' .. end_line)
 
     vim.cmd(range .. 'CodeCompanion #{buffer} ' .. final_prompt)
