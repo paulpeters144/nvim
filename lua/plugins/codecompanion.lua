@@ -63,7 +63,10 @@ return {
             adapter = get_adapter,
             opts = {
               system_prompt = [[You are a senior software engineer.
-Just answer the user's question or perform the requested task.
+Focus your response ONLY on the user's question or the specific task requested.
+Use the provided buffer context ONLY to inform your answer.
+DO NOT echo the context or return the entire file unless explicitly asked.
+If providing a code snippet, include ONLY the relevant portion.
 DO NOT provide any follow-up questions, suggestions, or 'example direction prompts' like 'Do you want to explore...', 'Would you prefer to...', or 'What would you like to do next?'.
 Stop immediately after your response.]],
             },
@@ -71,9 +74,11 @@ Stop immediately after your response.]],
           inline = {
             adapter = get_inline_adapter,
             opts = {
-              system_prompt = [[You are a senior software engineer.
-Just answer the user's question or perform the requested task.
-DO NOT provide any follow-up questions, suggestions, or 'example direction prompts' like 'Do you want to explore...', 'Would you prefer to...', or 'What would you like to do next?'.
+              system_prompt = [[You are a senior software engineer acting as an inline assistant.
+Provide ONLY the code or text to be inserted or replaced.
+DO NOT include markdown formatting (unless specifically requested), conversational filler, or the surrounding file context.
+Your output will be used to directly modify the buffer, so it must be surgical and precise.
+DO NOT return the entire file; only return the specific modification.
 Stop immediately after your response.]],
             },
           },
@@ -81,8 +86,8 @@ Stop immediately after your response.]],
         opts = {
           system_prompt = [[You are a senior software engineer.
 Just answer the user's question or perform the requested task.
-DO NOT provide any follow-up questions, suggestions, or 'example direction prompts' like 'Do you want to explore...', 'Would you prefer to...', or 'What would you like to do next?'.
-Just answer the question and then stop immediately.
+Focus your response ONLY on the question and then stop immediately.
+DO NOT echo the context or return the entire file.
 No conversational filler or guiding questions after the primary response.]],
         },
       }

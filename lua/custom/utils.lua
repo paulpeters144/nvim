@@ -103,15 +103,6 @@ function M.smart_chat(prompt, prefix, is_visual)
 
       local lines_to_add = { '', '---', '' }
 
-      -- Always include the full buffer content for context if appending to existing chat
-      table.insert(lines_to_add, 'Context from buffer (' .. source_ft .. '):')
-      table.insert(lines_to_add, '```' .. source_ft)
-      for _, line in ipairs(vim.split(full_buffer, '\n')) do
-        table.insert(lines_to_add, line)
-      end
-      table.insert(lines_to_add, '```')
-      table.insert(lines_to_add, '')
-
       if is_visual and selection then
         table.insert(lines_to_add, 'Selection:')
         table.insert(lines_to_add, '```' .. source_ft)
