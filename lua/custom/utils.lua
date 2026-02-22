@@ -179,4 +179,11 @@ function M.ai_edit(is_visual)
   end)
 end
 
+---Copy current buffer relative path to system clipboard
+function M.copy_relative_path()
+  local path = vim.fn.expand '%:.'
+  vim.fn.setreg('+', path)
+  vim.notify('Copied relative path: ' .. path)
+end
+
 return M
