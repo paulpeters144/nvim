@@ -5,7 +5,7 @@ return {
     branch = 'master',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'rust', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'go', 'gomod', 'gosum', 'gowork', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'rust', 'vim', 'vimdoc' },
       auto_install = true,
       highlight = {
         enable = true,

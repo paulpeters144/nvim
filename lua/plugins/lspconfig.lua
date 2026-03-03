@@ -128,7 +128,21 @@ return {
 
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        gopls = {
+          settings = {
+            gopls = {
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+              },
+            },
+          },
+        },
         -- pyright = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -158,6 +172,9 @@ return {
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'roslyn', -- C# LSP
+        'goimports',
+        'gofumpt',
+        'golangci-lint',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
