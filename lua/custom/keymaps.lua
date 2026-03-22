@@ -161,3 +161,12 @@ vim.keymap.set('n', '<leader>oa', '<cmd>Octo actions<cr>', { desc = '[O]cto [A]c
 vim.keymap.set('n', '<leader>cr', '<cmd>RustLsp codeAction<cr>', { desc = 'Rust [C]ode [R]eaction (Action)' })
 vim.keymap.set('n', '<leader>dr', '<cmd>RustLsp debuggables<cr>', { desc = 'Rust [D]ebug [R]unnables' })
 vim.keymap.set('n', '<leader>rd', '<cmd>RustLsp debug<cr>', { desc = '[R]ust [D]ebug' })
+vim.keymap.set('n', '<leader>rr', function()
+  for _, client in ipairs(vim.lsp.get_clients { name = 'rust-analyzer' }) do
+    client:stop()
+  end
+  vim.defer_fn(function()
+    vim.cmd 'silent! edit %'
+    vim.notify('Rust LSP restarted', vim.log.levels.INFO)
+  end, 500)
+end, { desc = '[R]ust [R]estart LSP' })
