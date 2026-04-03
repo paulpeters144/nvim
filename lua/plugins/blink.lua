@@ -47,7 +47,6 @@ return {
               return cmp.select_next()
             end
           end,
-          'snippet_forward',
           'fallback',
         },
         ['<S-Tab>'] = {
@@ -56,9 +55,10 @@ return {
               return cmp.select_prev()
             end
           end,
-          'snippet_backward',
           'fallback',
         },
+        ['<C-l>'] = { 'snippet_forward', 'fallback' },
+        ['<C-h>'] = { 'snippet_backward', 'fallback' },
       },
 
       appearance = {
