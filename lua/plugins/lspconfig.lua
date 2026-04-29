@@ -15,7 +15,10 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
       { 'j-hui/fidget.nvim', opts = {} },
       'saghen/blink.cmp',
-      'seblyng/roslyn.nvim',
+      {
+        'seblyng/roslyn.nvim',
+        commit = 'f2ec6ee', -- Pin to the last commit that supports Neovim 0.11.3
+      },
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
