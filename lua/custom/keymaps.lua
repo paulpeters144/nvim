@@ -40,7 +40,8 @@ vim.keymap.set('n', '<leader>bp', '<cmd>bprevious<cr>', { desc = '[B]uffer [P]re
 vim.keymap.set('n', '<leader>bl', '<cmd>b#<cr>', { desc = '[B]uffer [L]ast' })
 vim.keymap.set('n', '<leader>bd', utils.smart_buf_delete, { desc = '[B]uffer [D]elete' })
 vim.keymap.set('n', '<leader>bq', '<cmd>bufdo bdelete<cr>', { desc = '[B]uffer [Q]uit all others' })
-vim.keymap.set('n', '<leader>by', utils.copy_relative_path, { desc = '[B]uffer [Y]ank path' })
+vim.keymap.set('n', '<leader>by', utils.copy_relative_path, { desc = '[B]uffer [Y]ank relative path' })
+vim.keymap.set('n', '<leader>bY', utils.copy_absolute_path, { desc = '[B]uffer [Y]ank absolute path' })
 vim.keymap.set('n', '<S-h>', function()
   require('telescope.builtin').buffers(require('telescope.themes').get_ivy {
     sort_mru = true,

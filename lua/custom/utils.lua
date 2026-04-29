@@ -186,4 +186,11 @@ function M.copy_relative_path()
   vim.notify('Copied relative path: ' .. path)
 end
 
+---Copy current buffer absolute path to system clipboard
+function M.copy_absolute_path()
+  local path = vim.fn.expand '%:p'
+  vim.fn.setreg('+', path)
+  vim.notify('Copied absolute path: ' .. path)
+end
+
 return M
