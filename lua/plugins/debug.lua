@@ -125,6 +125,41 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
+    {
+      '<F4>',
+      function()
+        require('dap').terminate()
+      end,
+      desc = 'Debug: Terminate',
+    },
+    {
+      '<F6>',
+      function()
+        require('dap').pause()
+      end,
+      desc = 'Debug: Pause',
+    },
+    {
+      '<F8>',
+      function()
+        require('dap').run_last()
+      end,
+      desc = 'Debug: Run Last',
+    },
+    {
+      '<F9>',
+      function()
+        require('dap').disconnect()
+      end,
+      desc = 'Debug: Disconnect',
+    },
+    {
+      '<F10>',
+      function()
+        require('dap').step_back()
+      end,
+      desc = 'Debug: Step Back',
+    },
   },
   config = function()
     local dap = require 'dap'
@@ -165,15 +200,15 @@ return {
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
       controls = {
         icons = {
-          pause = '⏸',
+          pause = '⏸ F6',
           play = '▶ F5',
           step_into = '⏎ F1',
           step_over = '⏭ F2',
           step_out = '⏮ F3',
-          step_back = 'b',
-          run_last = '▶▶',
-          terminate = '⏹',
-          disconnect = '⏏',
+          step_back = 'b F10',
+          run_last = '▶▶ F8',
+          terminate = '⏹ F4',
+          disconnect = '⏏ F9',
         },
       },
       floating = {
