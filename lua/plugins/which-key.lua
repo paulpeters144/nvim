@@ -78,6 +78,7 @@ return {
         { '<leader>o', group = 'Octo', icon = '🐙' },
         { '<leader>r', group = 'Rust', icon = '🦀' },
         { '<leader>n', group = '.NET', icon = '󰪮' },
+        { '<leader>m', group = 'Multicursor', icon = '🖱️' },
       },
     },
   },

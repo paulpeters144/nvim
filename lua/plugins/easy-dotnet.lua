@@ -80,8 +80,7 @@ return {
     local netcoredbg_path = 'netcoredbg'
     local ok, mason_registry = pcall(require, 'mason-registry')
     if ok and mason_registry.is_installed 'netcoredbg' then
-      local pkg = mason_registry.get_package 'netcoredbg'
-      local path = pkg:get_install_path() .. '/netcoredbg/netcoredbg.exe'
+      local path = vim.fn.stdpath 'data' .. '/mason/packages/netcoredbg/netcoredbg/netcoredbg.exe'
       if vim.fn.executable(path) == 1 then
         netcoredbg_path = path
       end
