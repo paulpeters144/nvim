@@ -152,6 +152,7 @@ return {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
         'codelldb',
+        'netcoredbg',
       },
     }
 
@@ -210,6 +211,82 @@ return {
       },
     }
 
+    dap.adapters.coreclr = {
+      type = 'executable',
+      command = function()
+        local mason_registry = require 'mason-registry'
+        if mason_registry.is_installed 'netcoredbg' then
+          local pkg = mason_registry.get_package 'netcoredbg'
+          local path = pkg:get_install_path() .. '/netcoredbg/netcoredbg.exe'
+          if vim.fn.executable(path) == 1 then
+            return path
+          end
+        end
+        -- Fallback if mason isn't used or package structure changes
+        return 'netcoredbg'
+      end,
+      args = { '--interpreter=vscode' },
+    }
 
+    local last_project_dir = nil
+    dap.configurations.cs = {
+      {
+        type = 'coreclr',
+        name = 'Launch Project (Select)',
+        request = 'launch',
+        program = function()
+          return coroutine.create(function(dap_run_co)
+            local projects = vim.fn.globpath(vim.fn.getcwd(), '**/*.csproj', 0, 1)
+            if #projects == 0 then
+              vim.ui.input({ prompt = 'Path to DLL', default = vim.fn.getcwd() .. '/bin/Debug/', completion = 'file' }, function(input)
+                coroutine.resume(dap_run_co, input)
+              end)
+              return
+            end
+
+            vim.ui.select(projects, {
+              prompt = 'Select project to debug:',
+              format_item = function(item)
+                return vim.fn.fnamemodify(item, ':t')
+              end,
+            }, function(project_path)
+              if not project_path then
+                coroutine.resume(dap_run_co, nil)
+                return
+              end
+              local project_dir = vim.fn.fnamemodify(project_path, ':h')
+              local project_name = vim.fn.fnamemodify(project_path, ':t:r')
+              last_project_dir = project_dir
+
+              local dlls = vim.fn.globpath(project_dir, 'bin/Debug/**/*.dll', 0, 1)
+              local matches = {}
+              for _, dll in ipairs(dlls) do
+                if vim.fn.fnamemodify(dll, ':t:r') == project_name then
+                  table.insert(matches, dll)
+                end
+              end
+
+              if #matches == 0 then
+                vim.ui.input({ prompt = 'Path to DLL', default = project_dir .. '/bin/Debug/', completion = 'file' }, function(input)
+                  coroutine.resume(dap_run_co, input)
+                end)
+              elseif #matches == 1 then
+                coroutine.resume(dap_run_co, matches[1])
+              else
+                vim.ui.select(matches, {
+                  prompt = 'Select build output:',
+                }, function(choice)
+                  coroutine.resume(dap_run_co, choice)
+                end)
+              end
+            end)
+          end)
+        end,
+        cwd = function()
+          return last_project_dir or vim.fn.getcwd()
+        end,
+        stopAtEntry = false,
+      },
+    }
   end,
 }

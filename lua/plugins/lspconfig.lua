@@ -15,10 +15,6 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
       { 'j-hui/fidget.nvim', opts = {} },
       'saghen/blink.cmp',
-      {
-        'seblyng/roslyn.nvim',
-        commit = 'f2ec6ee', -- Pin to the last commit that supports Neovim 0.11.3
-      },
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -174,7 +170,6 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
-        'roslyn', -- C# LSP
         'goimports',
         'gofumpt',
         'golangci-lint',
@@ -192,12 +187,6 @@ return {
               require('lspconfig')[server_name].setup(server)
             end
           end,
-        },
-      }
-
-      require('roslyn').setup {
-        config = {
-          capabilities = capabilities,
         },
       }
     end,

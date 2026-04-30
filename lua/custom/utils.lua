@@ -28,8 +28,8 @@ function M.smart_buf_delete()
 end
 
 -- CodeCompanion Model State
-M.ai_selected_model = 'gemini-2.0-flash'
-M.ai_adapter_name = 'Gemini 2.0 Flash'
+M.ai_selected_model = 'gemini-3-flash-preview'
+M.ai_adapter_name = 'Gemini 3 Flash'
 
 local models = {
   { name = 'Gemini 3 Flash', model = 'gemini-3-flash-preview' },
