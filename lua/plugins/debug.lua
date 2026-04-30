@@ -211,21 +211,22 @@ return {
       },
     }
 
-    dap.adapters.coreclr = {
-      type = 'executable',
-      command = function()
-        local ok, mason_registry = pcall(require, 'mason-registry')
-        if ok and mason_registry.is_installed 'netcoredbg' then
-          local path = vim.fn.stdpath 'data' .. '/mason/packages/netcoredbg/netcoredbg/netcoredbg.exe'
-          if vim.fn.executable(path) == 1 then
-            return path
-          end
+    dap.adapters.coreclr = function(cb, _)
+      local ok, mason_registry = pcall(require, 'mason-registry')
+      local executable = 'netcoredbg'
+      if ok and mason_registry.is_installed 'netcoredbg' then
+        local path = vim.fn.stdpath 'data' .. '/mason/packages/netcoredbg/netcoredbg/netcoredbg.exe'
+        if vim.fn.executable(path) == 1 then
+          executable = path
         end
-        -- Fallback if mason isn't used or package structure changes
-        return 'netcoredbg'
-      end,
-      args = { '--interpreter=vscode' },
-    }
+      end
+
+      cb {
+        type = 'executable',
+        command = executable,
+        args = { '--interpreter=vscode' },
+      }
+    end
 
     local last_project_dir = nil
     dap.configurations.cs = {
