@@ -66,3 +66,31 @@ require('lazy').setup({
     },
   },
 })
+
+-- Fix empty diagnostic ranges to ensure underlines are visible
+local orig_underline_show = vim.diagnostic.handlers.underline.show
+vim.diagnostic.handlers.underline.show = function(ns, bufnr, diagnostics, opts)
+  local modified_diagnostics = {}
+  for _, diag in ipairs(diagnostics) do
+    local d = vim.deepcopy(diag)
+    -- If the range is exactly 0 length (common with C# Roslyn/OmniSharp for some messages)
+    if d.lnum == d.end_lnum and d.col == d.end_col then
+      local line = vim.api.nvim_buf_get_lines(bufnr, d.lnum, d.lnum + 1, false)[1]
+      if line and #line > 0 then
+        -- Find the first non-whitespace character as a starting point
+        local start_idx, end_idx = string.find(line, "%S+")
+        if start_idx then
+          d.col = start_idx - 1 -- 0-indexed
+          d.end_col = end_idx
+        else
+          d.end_col = d.col + 1
+        end
+      else
+        d.end_col = d.col + 1
+      end
+    end
+    table.insert(modified_diagnostics, d)
+  end
+  orig_underline_show(ns, bufnr, modified_diagnostics, opts)
+end
+
