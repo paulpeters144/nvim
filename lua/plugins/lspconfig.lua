@@ -84,10 +84,10 @@ return {
       -- Ensure diagnostic underlines are visible on Windows terminals and for Unnecessary tags
       local function set_diagnostic_hls()
         vim.api.nvim_set_hl(0, 'DiagnosticUnnecessary', { underline = true, fg = '#878787' })
-        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineError', { underline = true, sp = '#f92672' })
-        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineWarn', { underline = true, sp = '#fd971f' })
-        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineInfo', { underline = true, sp = '#66d9ef' })
-        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineHint', { underline = true, sp = '#a1efe4' })
+        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineError', { underline = true, fg = '#f92672', sp = '#f92672' })
+        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineWarn', { underline = true, fg = '#fd971f', sp = '#fd971f' })
+        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineInfo', { underline = true, fg = '#66d9ef', sp = '#66d9ef' })
+        vim.api.nvim_set_hl(0, 'DiagnosticUnderlineHint', { underline = true, fg = '#a1efe4', sp = '#a1efe4' })
       end
       set_diagnostic_hls()
       vim.api.nvim_create_autocmd('ColorScheme', { callback = set_diagnostic_hls })
