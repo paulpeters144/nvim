@@ -13,15 +13,15 @@ local function add_dotnet_mappings()
     vim.cmd 'Dotnet debug profile default'
   end, { nowait = true })
 
-  vim.keymap.set('n', '<leader>ns', function()
+  vim.keymap.set('n', '<leader>lns', function()
     vim.cmd 'Dotnet solution select'
   end, { desc = 'Select Solution' })
 
-  vim.keymap.set('n', '<leader>np', function()
+  vim.keymap.set('n', '<leader>lnp', function()
     vim.cmd 'Dotnet project view'
   end, { desc = 'Project View' })
 
-  vim.keymap.set('n', '<leader>nr', function()
+  vim.keymap.set('n', '<leader>lnr', function()
     local projects = vim.fn.globpath(vim.fn.getcwd(), '**/*.csproj', 0, 1)
     if #projects == 0 then
       vim.notify('No projects found', vim.log.levels.WARN)
@@ -49,24 +49,24 @@ local function add_dotnet_mappings()
     end
   end, { desc = 'Run .NET Project' })
 
-  vim.keymap.set('n', '<leader>nd', function()
+  vim.keymap.set('n', '<leader>lnd', function()
     -- Use manual DAP configuration instead of easy-dotnet's problematic debugger
     require('dap').continue()
   end, { desc = 'Debug .NET Project (Manual DAP)' })
 
-  vim.keymap.set('n', '<leader>nu', function()
+  vim.keymap.set('n', '<leader>lnu', function()
     vim.cmd 'Dotnet _server update'
   end, { desc = 'Update Server' })
 
-  vim.keymap.set('n', '<leader>ni', function()
+  vim.keymap.set('n', '<leader>lni', function()
     vim.cmd 'checkhealth easy-dotnet'
   end, { desc = 'Check Health' })
 
-  vim.keymap.set('n', '<leader>nh', function()
+  vim.keymap.set('n', '<leader>lnh', function()
     vim.cmd 'Dotnet _server restart'
   end, { desc = 'Restart Server' })
 
-  vim.keymap.set('n', '<leader>nx', function()
+  vim.keymap.set('n', '<leader>lnx', function()
     require('easy-dotnet').reset()
   end, { desc = 'Reset easy-dotnet' })
 end
