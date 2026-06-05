@@ -6,6 +6,16 @@
 -- be extended to other languages as well. That's why it's called
 -- kickstart.nvim and not kitchen-sink.nvim ;)
 
+local function stop_debug()
+  local dap = require 'dap'
+  if vim.fn.has 'win32' == 1 then
+    dap.disconnect { terminateDebuggee = true }
+  else
+    dap.terminate()
+  end
+  require('dapui').close()
+end
+
 return {
   -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
@@ -32,6 +42,11 @@ return {
         require('dap').continue()
       end,
       desc = 'Debug: Start/Continue (F5)',
+    },
+    {
+      '<leader>dt',
+      stop_debug,
+      desc = 'Debug: Stop/Terminate (F4)',
     },
     {
       '<leader>di',
@@ -86,6 +101,7 @@ return {
     {
       '<leader>de',
       function()
+        ---@diagnostic disable-next-line: missing-fields
         require('dapui').eval(nil, { enter = true, width = vim.o.columns })
       end,
       desc = 'Debug: Eval',
@@ -127,10 +143,8 @@ return {
     },
     {
       '<F4>',
-      function()
-        require('dap').terminate()
-      end,
-      desc = 'Debug: Terminate',
+      stop_debug,
+      desc = 'Debug: Stop/Terminate',
     },
     {
       '<F6>',
@@ -193,11 +207,13 @@ return {
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
+    ---@diagnostic disable-next-line: missing-fields
     dapui.setup {
       -- Set icons to characters that are more likely to work in every terminal.
       --    Feel free to remove or use ones that you like more! :)
       --    Don't feel like these are good choices.
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
+      ---@diagnostic disable-next-line: missing-fields
       controls = {
         icons = {
           pause = '⏸ F6',
@@ -260,6 +276,9 @@ return {
         type = 'executable',
         command = executable,
         args = { '--interpreter=vscode' },
+        options = {
+          detached = true,
+        },
       }
     end
 
