@@ -39,6 +39,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.g.snacks_animate = false
 vim.opt.relativenumber = false
 
+vim.treesitter.language.ensure_installed = {
+  'bash', 'c', 'diff', 'go', 'gomod', 'gosum', 'gowork',
+  'html', 'lua', 'luadoc', 'markdown', 'markdown_inline',
+  'query', 'rust', 'vim', 'vimdoc',
+}
+
 if vim.fn.has 'win32' == 1 then
   if vim.fn.executable 'pwsh' == 1 then
     vim.o.shell = 'pwsh'
