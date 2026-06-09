@@ -8,6 +8,9 @@ return {
         markdown = { 'markdownlint' },
         go = { 'golangcilint' },
       }
+      lint.linters.golangcilint = vim.tbl_deep_extend('force', lint.linters.golangcilint, {
+        ignore_exitcode = true,
+      })
 
       -- Create autocommand which carries out the actual linting
       -- on the specified events.
