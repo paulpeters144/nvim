@@ -2,7 +2,7 @@ local utils = require 'custom.utils'
 
 -- [[ Basic Keymaps ]]
 vim.keymap.set('n', '<Esc>', utils.clear_ui, { desc = 'Clear search highlights and floating windows' })
-vim.keymap.set('n', '-', '<cmd>Oil<cr>', { desc = 'Open parent directory' })
+vim.keymap.set('n', '-', '<cmd>Oil<cr>', { desc = 'Open parent (Oil)' })
 vim.keymap.set('n', 'Y', 'yy', { desc = 'Yank whole line' })
 
 -- Diagnostics
@@ -20,7 +20,7 @@ vim.keymap.set('n', '<C-d>', '<C-d>zz', { desc = 'Scroll down and center' })
 vim.keymap.set('n', '<C-u>', '<C-u>zz', { desc = 'Scroll up and center' })
 vim.keymap.set('n', '<C-f>', '<C-f>zz', { desc = 'Page down and center' })
 vim.keymap.set('n', '<C-b>', '<C-b>zz', { desc = 'Page up and center' })
-vim.keymap.set('n', '<C-b>', '<C-v>', { desc = 'Visual block mode' })
+vim.keymap.set('n', '<C-b>', '<C-v>', { desc = '[V]isual block mode (overrides PgUp)' })
 
 -- [[ Window Navigation ]]
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -29,19 +29,19 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- [[ Window Management ]]
-vim.keymap.set('n', '<leader>wr', '<C-w>=', { desc = '[W]indow [R]ealign' })
-vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = '[W]indow [V]ertical split' })
-vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = '[W]indow [H]orizontal split' })
-vim.keymap.set('n', '<leader>wd', '<C-w>c<C-w>=', { desc = '[W]indow [D]elete' })
+vim.keymap.set('n', '<leader>wr', '<C-w>=', { desc = '[R]e-equalize' })
+vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = '[V]ertical split' })
+vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = '[H]orizontal split' })
+vim.keymap.set('n', '<leader>wd', '<C-w>c<C-w>=', { desc = '[D]elete' })
 
 -- [[ Buffer Management ]]
-vim.keymap.set('n', '<leader>bn', '<cmd>bnext<cr>', { desc = '[B]uffer [N]ext' })
-vim.keymap.set('n', '<leader>bp', '<cmd>bprevious<cr>', { desc = '[B]uffer [P]revious' })
-vim.keymap.set('n', '<leader>bl', '<cmd>b#<cr>', { desc = '[B]uffer [L]ast' })
-vim.keymap.set('n', '<leader>bd', utils.smart_buf_delete, { desc = '[B]uffer [D]elete' })
-vim.keymap.set('n', '<leader>bq', '<cmd>bufdo bdelete<cr>', { desc = '[B]uffer [Q]uit all others' })
-vim.keymap.set('n', '<leader>by', utils.copy_relative_path, { desc = '[B]uffer [Y]ank relative path' })
-vim.keymap.set('n', '<leader>bY', utils.copy_absolute_path, { desc = '[B]uffer [Y]ank absolute path' })
+vim.keymap.set('n', '<leader>bn', '<cmd>bnext<cr>', { desc = '[N]ext' })
+vim.keymap.set('n', '<leader>bp', '<cmd>bprevious<cr>', { desc = '[P]revious' })
+vim.keymap.set('n', '<leader>bl', '<cmd>b#<cr>', { desc = '[L]ast' })
+vim.keymap.set('n', '<leader>bd', utils.smart_buf_delete, { desc = '[D]elete' })
+vim.keymap.set('n', '<leader>bq', '<cmd>bufdo bdelete<cr>', { desc = '[Q]uit others' })
+vim.keymap.set('n', '<leader>by', utils.copy_relative_path, { desc = 'cop[Y] relative path' })
+vim.keymap.set('n', '<leader>bY', utils.copy_absolute_path, { desc = 'cop[Y] absolute path' })
 vim.keymap.set('n', '<S-h>', function()
   require('telescope.builtin').buffers(require('telescope.themes').get_ivy {
     sort_mru = true,
@@ -67,27 +67,27 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- [[ Session Management ]]
 vim.keymap.set('n', '<leader>qs', function()
   require('persistence').load()
-end, { desc = '[Q]uick [S]ession load' })
+end, { desc = 'Load (current dir)' })
 vim.keymap.set('n', '<leader>qS', function()
   require('persistence').select()
-end, { desc = '[Q]uick [S]ession select' })
+end, { desc = '[S]elect from list' })
 vim.keymap.set('n', '<leader>ql', function()
   require('persistence').load { last = true }
-end, { desc = '[Q]uick [L]ast session' })
+end, { desc = '[L]ast session' })
 vim.keymap.set('n', '<leader>qd', function()
   require('persistence').stop()
-end, { desc = '[Q]uick [D]elete session' })
+end, { desc = '[D]elete session' })
 
 -- [[ Search (Telescope) ]]
 vim.keymap.set('n', '<leader>sh', function()
   require('telescope.builtin').help_tags()
-end, { desc = '[S]earch [H]elp' })
+end, { desc = '[S]earch [H]elp tags' })
 vim.keymap.set('n', '<leader>sk', function()
   require('telescope.builtin').keymaps()
 end, { desc = '[S]earch [K]eymaps' })
 vim.keymap.set('n', '<leader>ss', function()
   require('telescope.builtin').builtin()
-end, { desc = '[S]earch [S]elect Telescope' })
+end, { desc = '[S]earch built-in [S]electors' })
 vim.keymap.set('n', '<leader>sw', function()
   require('telescope.builtin').grep_string()
 end, { desc = '[S]earch current [W]ord' })
@@ -105,13 +105,13 @@ vim.keymap.set('n', '<leader>s.', function()
 end, { desc = '[S]earch Recent Files' })
 vim.keymap.set('n', '<leader><leader>', function()
   require('telescope.builtin').find_files()
-end, { desc = 'Find Files' })
+end, { desc = 'Find Files (Telescope)' })
 vim.keymap.set('n', '<leader>/', function()
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
     previewer = false,
   })
-end, { desc = '[/] Fuzzily search in current buffer' })
+end, { desc = 'Search in Buffer (fuzzy)' })
 vim.keymap.set('n', '<leader>s/', function()
   require('telescope.builtin').live_grep {
     grep_open_files = true,
@@ -123,16 +123,16 @@ vim.keymap.set('n', '<leader>sn', function()
 end, { desc = '[S]earch [N]eovim files' })
 
 -- [[ AI (CodeCompanion) ]]
-vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', { desc = '[A]I [C]hat' })
-vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { desc = '[A]I [A]ctions' })
-vim.keymap.set({ 'n', 'v' }, '<leader>as', utils.ai_switch_model, { desc = '[A]I [S]witch Model' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', { desc = '[C]hat Toggle' })
+vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { desc = '[A]ctions' })
+vim.keymap.set({ 'n', 'v' }, '<leader>as', utils.ai_switch_model, { desc = '[S]witch Model' })
 vim.keymap.set('n', '<leader>aq', function()
   local line_num = vim.fn.line '.'
   utils.smart_chat('AI Question (Line ' .. line_num .. '): ', 'Regarding line ' .. line_num .. ': ', false)
-end, { desc = '[A]I [Q]uestion (Buffer)' })
+end, { desc = '[Q]uestion (Buffer)' })
 vim.keymap.set('v', '<leader>aq', function()
   utils.smart_chat('AI Question (Selection): ', nil, true)
-end, { desc = '[A]I [Q]uestion (Selection)' })
+end, { desc = '[Q]uestion (Selection)' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ar', function()
   local bufs = vim.api.nvim_list_bufs()
   for _, buf in ipairs(bufs) do
@@ -141,27 +141,27 @@ vim.keymap.set({ 'n', 'v' }, '<leader>ar', function()
     end
   end
   vim.cmd 'CodeCompanionChat Add'
-end, { desc = '[A]I [R]eset Chat' })
+end, { desc = '[R]eset Chat' })
 vim.keymap.set('n', '<leader>ae', function()
   utils.ai_edit(false)
-end, { desc = '[A]I [E]dit (Buffer)' })
+end, { desc = '[E]dit (Buffer)' })
 vim.keymap.set('v', '<leader>ae', function()
   utils.ai_edit(true)
-end, { desc = '[A]I [E]dit (Selection)' })
+end, { desc = '[E]dit (Selection)' })
 
 -- [[ Git (Octo) ]]
-vim.keymap.set('n', '<leader>op', '<cmd>Octo pr list<cr>', { desc = '[O]cto [P]R list' })
-vim.keymap.set('n', '<leader>oi', '<cmd>Octo issue list<cr>', { desc = '[O]cto [I]ssue list' })
-vim.keymap.set('n', '<leader>od', '<cmd>Octo discussion list<cr>', { desc = '[O]cto [D]iscussion list' })
-vim.keymap.set('n', '<leader>on', '<cmd>Octo notification list<cr>', { desc = '[O]cto [N]otification list' })
-vim.keymap.set('n', '<leader>os', '<cmd>Octo search<cr>', { desc = '[O]cto [S]earch' })
-vim.keymap.set('n', '<leader>or', '<cmd>Octo repo list<cr>', { desc = '[O]cto [R]epo list' })
-vim.keymap.set('n', '<leader>oa', '<cmd>Octo actions<cr>', { desc = '[O]cto [A]ctions' })
+vim.keymap.set('n', '<leader>op', '<cmd>Octo pr list<cr>', { desc = '[P]R List' })
+vim.keymap.set('n', '<leader>oi', '<cmd>Octo issue list<cr>', { desc = '[I]ssue List' })
+vim.keymap.set('n', '<leader>od', '<cmd>Octo discussion list<cr>', { desc = '[D]iscussion List' })
+vim.keymap.set('n', '<leader>on', '<cmd>Octo notification list<cr>', { desc = '[N]otification List' })
+vim.keymap.set('n', '<leader>os', '<cmd>Octo search<cr>', { desc = '[S]earch' })
+vim.keymap.set('n', '<leader>or', '<cmd>Octo repo list<cr>', { desc = '[R]epo List' })
+vim.keymap.set('n', '<leader>oa', '<cmd>Octo actions<cr>', { desc = '[A]ctions' })
 
 -- [[ Rust (Rustaceanvim) ]]
-vim.keymap.set('n', '<leader>lra', '<cmd>RustLsp codeAction<cr>', { desc = 'Rust Code [A]ction' })
-vim.keymap.set('n', '<leader>lrg', '<cmd>RustLsp debuggables<cr>', { desc = 'Rust Debug[g]ables' })
-vim.keymap.set('n', '<leader>lrd', '<cmd>RustLsp debug<cr>', { desc = 'Rust [D]ebug' })
+vim.keymap.set('n', '<leader>lra', '<cmd>RustLsp codeAction<cr>', { desc = 'Code [A]ction' })
+vim.keymap.set('n', '<leader>lrg', '<cmd>RustLsp debuggables<cr>', { desc = 'Debu[g]gables' })
+vim.keymap.set('n', '<leader>lrd', '<cmd>RustLsp debug<cr>', { desc = '[D]ebug' })
 vim.keymap.set('n', '<leader>lrr', function()
   for _, client in ipairs(vim.lsp.get_clients { name = 'rust-analyzer' }) do
     client:stop()
@@ -170,4 +170,4 @@ vim.keymap.set('n', '<leader>lrr', function()
     vim.cmd 'silent! edit %'
     vim.notify('Rust LSP restarted', vim.log.levels.INFO)
   end, 500)
-end, { desc = 'Rust [R]estart LSP' })
+end, { desc = '[R]estart LSP' })

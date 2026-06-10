@@ -12,6 +12,7 @@ vim.schedule(function()
 end)
 
 vim.o.termguicolors = true
+vim.o.modeline = false -- ex: comments in Go source files trigger false modeline errors (E518)
 
 vim.o.breakindent = true
 vim.o.undofile = true

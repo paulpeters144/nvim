@@ -12,16 +12,16 @@ return {
       -- Add or skip cursor above/below the main cursor.
       set({ 'n', 'x' }, '<up>', function()
         mc.lineAddCursor(-1)
-      end, { desc = 'Add cursor above' })
+      end, { desc = 'Add cursor ↑' })
       set({ 'n', 'x' }, '<down>', function()
         mc.lineAddCursor(1)
-      end, { desc = 'Add cursor below' })
+      end, { desc = 'Add cursor ↓' })
       set({ 'n', 'x' }, '<leader>m<up>', function()
         mc.lineSkipCursor(-1)
-      end, { desc = 'Skip line above' })
+      end, { desc = 'Skip cursor ↑' })
       set({ 'n', 'x' }, '<leader>m<down>', function()
         mc.lineSkipCursor(1)
-      end, { desc = 'Skip line below' })
+      end, { desc = 'Skip cursor ↓' })
 
       -- Add and remove cursors with control + left click.
       set('n', '<c-leftmouse>', mc.handleMouse)
@@ -31,27 +31,27 @@ return {
       -- Match word/selection
       set({ 'n', 'x' }, '<leader>mn', function()
         mc.matchAddCursor(1)
-      end, { desc = 'Match add cursor' })
+      end, { desc = 'Add [N]ext match' })
       set({ 'n', 'x' }, '<leader>ms', function()
         mc.matchSkipCursor(1)
-      end, { desc = 'Match skip cursor' })
+      end, { desc = '[S]kip next match' })
       set({ 'n', 'x' }, '<leader>mN', function()
         mc.matchAddCursor(-1)
-      end, { desc = 'Match add cursor (prev)' })
+      end, { desc = 'Add [P]rev match' })
       set({ 'n', 'x' }, '<leader>mS', function()
         mc.matchSkipCursor(-1)
-      end, { desc = 'Match skip cursor (prev)' })
+      end, { desc = 'Skip prev match' })
 
       -- Match all
       set({ 'n', 'x' }, '<leader>ma', function()
         mc.matchAllAddCursors()
-      end, { desc = 'Match all cursors' })
+      end, { desc = 'Add [A]ll matches' })
 
       -- Actions
       set({ 'n', 'x' }, '<leader>ml', function()
         mc.alignCursors()
-      end, { desc = 'Align cursors' })
-      set('n', '<leader>mr', mc.restoreCursors, { desc = 'Restore cursors' })
+      end, { desc = 'A[l]ign cursors' })
+      set('n', '<leader>mr', mc.restoreCursors, { desc = '[R]estore cursors' })
 
       -- Disable and enable cursors.
       set({ 'n', 'x' }, '<c-q>', mc.toggleCursor, { desc = 'Toggle multicursor' })

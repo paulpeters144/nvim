@@ -77,6 +77,7 @@ return {
         { '<leader>q', group = 'Session', icon = '💾' },
         { '<leader>o', group = 'Octo', icon = '🐙' },
         { '<leader>l', group = 'Languages', icon = '💻' },
+        { '<leader>lg', group = 'Go', icon = '󰟓' },
         { '<leader>lr', group = 'Rust', icon = '🦀' },
         { '<leader>ln', group = '.NET', icon = '󰪮' },
         { '<leader>m', group = 'Multicursor', icon = '🖱️' },

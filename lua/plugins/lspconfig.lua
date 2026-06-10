@@ -25,17 +25,16 @@ return {
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
-          map('<leader>cR', require('telescope.builtin').lsp_references, 'References')
-          map('<leader>cr', vim.lsp.buf.rename, 'Rename Symbol')
-          map('<leader>ca', vim.lsp.buf.code_action, 'Actions (Code)')
-          map('<leader>ci', require('telescope.builtin').lsp_implementations, 'Implementations')
-          map('<leader>cd', require('telescope.builtin').lsp_definitions, 'Definitions')
-          map('<leader>cD', vim.lsp.buf.declaration, 'Declaration')
-          map('<leader>co', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
-          map('<leader>cw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
-          map('<leader>ct', require('telescope.builtin').lsp_type_definitions, 'Type Definition')
-          map('<leader>ch', vim.lsp.buf.hover, 'Hover Documentation')
-          map('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
+          map('<leader>cR', require('telescope.builtin').lsp_references, '[R]eferences')
+          map('<leader>cr', vim.lsp.buf.rename, '[R]ename')
+          map('<leader>ca', vim.lsp.buf.code_action, 'Code [A]ction')
+          map('<leader>ci', require('telescope.builtin').lsp_implementations, '[I]mplementations')
+          map('<leader>cd', require('telescope.builtin').lsp_definitions, '[D]efinitions')
+          map('<leader>cD', vim.lsp.buf.declaration, '[D]eclaration')
+          map('<leader>co', require('telescope.builtin').lsp_document_symbols, 'Document Symb[o]ls')
+          map('<leader>cw', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace Symbols')
+          map('<leader>ct', require('telescope.builtin').lsp_type_definitions, '[T]ype Definition')
+          map('<leader>ch', vim.lsp.buf.hover, '[H]over')
 
           ---@param client vim.lsp.Client
           ---@param method vim.lsp.protocol.Method
@@ -76,7 +75,7 @@ return {
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle Inlay [H]ints')
+            end, 'Toggle Inlay [H]ints')
           end
         end,
       })

@@ -14,8 +14,8 @@ return {
       }
     end,
     keys = {
-      { '<leader>gg', '<cmd>Neogit<cr>', desc = 'Neogit' },
-      { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Git Status (Telescope)' },
+      { '<leader>gg', '<cmd>Neogit<cr>', desc = 'Neogit (Full UI)' },
+      { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Git [S]tatus (Telescope)' },
     },
   },
 }

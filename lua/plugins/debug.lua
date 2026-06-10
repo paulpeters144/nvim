@@ -31,8 +31,6 @@ return {
     'mason-org/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
 
-    -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -41,47 +39,47 @@ return {
       function()
         require('dap').continue()
       end,
-      desc = 'Debug: Start/Continue (F5)',
+      desc = '[C]ontinue (F5)',
     },
     {
       '<leader>dt',
       stop_debug,
-      desc = 'Debug: Stop/Terminate (F4)',
+      desc = 'S[T]op/Terminate (F4)',
     },
     {
       '<leader>di',
       function()
         require('dap').step_into()
       end,
-      desc = 'Debug: Step Into (F1)',
+      desc = 'Step [I]nto (F1)',
     },
     {
       '<leader>do',
       function()
         require('dap').step_over()
       end,
-      desc = 'Debug: Step Over (F2)',
+      desc = 'Step [O]ver (F2)',
     },
     {
       '<leader>dO',
       function()
         require('dap').step_out()
       end,
-      desc = 'Debug: Step Out (F3)',
+      desc = 'Step [O]ut (F3)',
     },
     {
       '<leader>db',
       function()
         require('dap').toggle_breakpoint()
       end,
-      desc = 'Debug: Toggle Breakpoint',
+      desc = 'Toggle [B]reakpoint',
     },
     {
       '<leader>dB',
       function()
         require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
       end,
-      desc = 'Debug: Set Breakpoint',
+      desc = 'Breakpoint (cond)',
     },
     -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
     {
@@ -89,14 +87,14 @@ return {
       function()
         require('dapui').toggle()
       end,
-      desc = 'Debug: Toggle UI (F7)',
+      desc = 'Toggle [U]I (F7)',
     },
     {
       '<leader>dh',
       function()
         require('dapui').eval()
       end,
-      desc = 'Debug: Hover',
+      desc = '[H]over',
     },
     {
       '<leader>de',
@@ -104,75 +102,75 @@ return {
         ---@diagnostic disable-next-line: missing-fields
         require('dapui').eval(nil, { enter = true, width = vim.o.columns })
       end,
-      desc = 'Debug: Eval',
+      desc = '[E]val',
     },
     {
       '<F5>',
       function()
         require('dap').continue()
       end,
-      desc = 'Debug: Start/Continue',
+      desc = '[C]ontinue',
     },
     {
       '<F1>',
       function()
         require('dap').step_into()
       end,
-      desc = 'Debug: Step Into',
+      desc = 'Step [I]nto',
     },
     {
       '<F2>',
       function()
         require('dap').step_over()
       end,
-      desc = 'Debug: Step Over',
+      desc = 'Step [O]ver',
     },
     {
       '<F3>',
       function()
         require('dap').step_out()
       end,
-      desc = 'Debug: Step Out',
+      desc = 'Step [O]ut',
     },
     {
       '<F7>',
       function()
         require('dapui').toggle()
       end,
-      desc = 'Debug: See last session result.',
+      desc = 'Toggle [U]I',
     },
     {
       '<F4>',
       stop_debug,
-      desc = 'Debug: Stop/Terminate',
+      desc = 'S[T]op/Terminate',
     },
     {
       '<F6>',
       function()
         require('dap').pause()
       end,
-      desc = 'Debug: Pause',
+      desc = '[P]ause',
     },
     {
       '<F8>',
       function()
         require('dap').run_last()
       end,
-      desc = 'Debug: Run Last',
+      desc = 'Run [L]ast',
     },
     {
       '<F9>',
       function()
         require('dap').disconnect()
       end,
-      desc = 'Debug: Disconnect',
+      desc = '[D]isconnect',
     },
     {
       '<F10>',
       function()
         require('dap').step_back()
       end,
-      desc = 'Debug: Step Back',
+      desc = 'Step [B]ack',
     },
   },
   config = function()
@@ -252,15 +250,6 @@ return {
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
-
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
-      },
-    }
 
     dap.adapters.coreclr = function(cb, _)
       local ok, mason_registry = pcall(require, 'mason-registry')
