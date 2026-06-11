@@ -121,6 +121,12 @@ end, { desc = '[S]earch [/] in Open Files' })
 vim.keymap.set('n', '<leader>sn', function()
   require('telescope.builtin').find_files { cwd = vim.fn.stdpath 'config' }
 end, { desc = '[S]earch [N]eovim files' })
+vim.keymap.set('n', '<leader>sH', function()
+  require('telescope.builtin').find_files {
+    prompt_title = 'Find Files (incl. hidden)',
+    find_command = { 'rg', '--files', '--hidden' },
+  }
+end, { desc = '[S]earch [H]idden files' })
 
 -- [[ AI (CodeCompanion) ]]
 vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', { desc = '[C]hat Toggle' })
