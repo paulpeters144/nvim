@@ -128,33 +128,6 @@ vim.keymap.set('n', '<leader>sH', function()
   }
 end, { desc = '[S]earch [H]idden files' })
 
--- [[ AI (CodeCompanion) ]]
-vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', { desc = '[C]hat Toggle' })
-vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { desc = '[A]ctions' })
-vim.keymap.set({ 'n', 'v' }, '<leader>as', utils.ai_switch_model, { desc = '[S]witch Model' })
-vim.keymap.set('n', '<leader>aq', function()
-  local line_num = vim.fn.line '.'
-  utils.smart_chat('AI Question (Line ' .. line_num .. '): ', 'Regarding line ' .. line_num .. ': ', false)
-end, { desc = '[Q]uestion (Buffer)' })
-vim.keymap.set('v', '<leader>aq', function()
-  utils.smart_chat('AI Question (Selection): ', nil, true)
-end, { desc = '[Q]uestion (Selection)' })
-vim.keymap.set({ 'n', 'v' }, '<leader>ar', function()
-  local bufs = vim.api.nvim_list_bufs()
-  for _, buf in ipairs(bufs) do
-    if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_get_option_value('filetype', { buf = buf }) == 'codecompanion' then
-      vim.api.nvim_buf_delete(buf, { force = true })
-    end
-  end
-  vim.cmd 'CodeCompanionChat Add'
-end, { desc = '[R]eset Chat' })
-vim.keymap.set('n', '<leader>ae', function()
-  utils.ai_edit(false)
-end, { desc = '[E]dit (Buffer)' })
-vim.keymap.set('v', '<leader>ae', function()
-  utils.ai_edit(true)
-end, { desc = '[E]dit (Selection)' })
-
 -- [[ Git (Octo) ]]
 vim.keymap.set('n', '<leader>op', '<cmd>Octo pr list<cr>', { desc = '[P]R List' })
 vim.keymap.set('n', '<leader>oi', '<cmd>Octo issue list<cr>', { desc = '[I]ssue List' })
