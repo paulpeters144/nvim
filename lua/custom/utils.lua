@@ -27,9 +27,19 @@ function M.smart_buf_delete()
   end
 end
 
+local function strip_oil_prefix(path)
+  local oil_prefix = 'oil:///'
+  if path:sub(1, #oil_prefix) == oil_prefix then
+    path = path:sub(#oil_prefix + 1)
+    path = path:gsub('^([A-Za-z])/', '%1:/')
+  end
+  return path
+end
+
 ---Copy current buffer relative path to system clipboard
 function M.copy_relative_path()
-  local path = vim.fn.expand '%:.'
+  local path = vim.fn.expand '%.'
+  path = strip_oil_prefix(path)
   vim.fn.setreg('+', path)
   vim.notify('Copied relative path: ' .. path)
 end
@@ -37,6 +47,7 @@ end
 ---Copy current buffer absolute path to system clipboard
 function M.copy_absolute_path()
   local path = vim.fn.expand '%:p'
+  path = strip_oil_prefix(path)
   vim.fn.setreg('+', path)
   vim.notify('Copied absolute path: ' .. path)
 end
