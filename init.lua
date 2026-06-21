@@ -6,6 +6,7 @@ vim.g.have_nerd_font = false
 require 'custom.keymaps'
 require 'custom.options'
 require 'custom.health'
+require 'custom.treesitter'
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then

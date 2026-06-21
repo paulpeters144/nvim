@@ -9,7 +9,7 @@ A modular, high-performance Neovim configuration built on top of [kickstart.nvim
   - Pre-configured for: TypeScript (`ts_ls`), C# (`roslyn`), and Lua (`lua_ls`).
 - **Completion**: [blink.cmp](https://github.com/Saghen/blink.cmp) for ultra-fast autocompletion with snippet support via [LuaSnip](https://github.com/L3MON4D3/LuaSnip).
 - **Fuzzy Finder**: [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) for powerful searching across files, buffers, and symbols.
-- **Treesitter**: [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for superior syntax highlighting and code understanding.
+- **Treesitter**: Built-in Neovim tree-sitter for syntax highlighting and code understanding.
 - **File Management**: [oil.nvim](https://github.com/stevearc/oil.nvim) for editing the file system like a normal Neovim buffer.
 - **Terminal**: [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) for seamless terminal integration.
 - **Git**: [neogit](https://github.com/NeogitOrg/neogit) and [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) for a complete Git workflow.
@@ -75,3 +75,26 @@ This configuration is specifically tuned for Windows performance:
 2. Clone this repository into `%LOCALAPPDATA%\nvim`.
 3. Start Neovim; `lazy.nvim` will automatically install the plugins.
 4. Ensure you have a C compiler (like `gcc` or `clang`) and `make` installed for building native extensions (like `fzf-native`).
+
+### Tree-sitter Parsers
+
+This config uses Neovim's built-in tree-sitter (no external plugin). Parsers are compiled `.so` files
+that Neovim loads at runtime. They are **not** auto-installed — you need the
+[`tree-sitter` CLI](https://github.com/tree-sitter/tree-sitter) to compile them from source.
+
+Install the CLI (one of these):
+
+```sh
+npm install -g tree-sitter-cli
+# or
+cargo install tree-sitter-cli
+```
+
+Then compile a parser from any grammar repository:
+
+```sh
+git clone --depth 1 https://github.com/tree-sitter/tree-sitter-go.git
+tree-sitter build --output ~/.local/share/nvim/site/parser/go.so tree-sitter-go
+```
+
+Parsers are installed to `~/.local/share/nvim/site/parser/` so Neovim can find them via its runtime path.
