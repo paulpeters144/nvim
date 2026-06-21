@@ -5,7 +5,6 @@ return {
     config = function()
       local lint = require 'lint'
       lint.linters_by_ft = {
-        markdown = { 'markdownlint' },
         go = { 'golangcilint' },
       }
       lint.linters.golangcilint = vim.tbl_deep_extend('force', lint.linters.golangcilint, {

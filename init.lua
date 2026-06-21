@@ -78,7 +78,7 @@ vim.diagnostic.handlers.underline.show = function(ns, bufnr, diagnostics, opts)
       local line = vim.api.nvim_buf_get_lines(bufnr, d.lnum, d.lnum + 1, false)[1]
       if line and #line > 0 then
         -- Find the first non-whitespace character as a starting point
-        local start_idx, end_idx = string.find(line, "%S+")
+        local start_idx, end_idx = string.find(line, '%S+')
         if start_idx then
           d.col = start_idx - 1 -- 0-indexed
           d.end_col = end_idx
@@ -93,4 +93,3 @@ vim.diagnostic.handlers.underline.show = function(ns, bufnr, diagnostics, opts)
   end
   orig_underline_show(ns, bufnr, modified_diagnostics, opts)
 end
-
