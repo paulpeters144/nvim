@@ -1,0 +1,64 @@
+# =========================================================
+# 🎨 APPEARANCE, VIBES & TYPOGRAPHY
+# =========================================================
+# Note: Built-in theme names use spaces and Capital Letters
+theme = "Catppuccin Mocha"
+background-opacity = 0.88
+window-decoration = false
+
+# Cozy spacing (Ghostty uses padding per side in pixels)
+window-padding-x = 1
+window-padding-y = 1
+window-padding-balance = true
+
+# Premium typography settings
+font-family = "JetBrains Mono Nerd Font"
+font-style = "Medium"
+font-size = 11.5
+
+# Disable ligatures
+font-feature = -calt,-liga,-dlig
+
+# Adds vertical breathing room (mimics line_height = 1.05)
+adjust-cell-height = 0%
+
+# Smooth, premium feeling cursor
+cursor-style = bar
+cursor-style-blink = true
+
+# =========================================================
+# 🗂️ TAB BAR STYLING
+# =========================================================
+window-show-tab-bar = always
+gtk-custom-css = /home/paul-ubuntu/.config/ghostty/tab-styles.css
+
+# =========================================================
+# ⚡ HARDWARE & SYSTEM
+# =========================================================
+command = /bin/zsh -l
+
+# =========================================================
+# ⌨️ KEYBINDINGS & MODES (Vim-Style via Key Chains)
+# =========================================================
+
+# Pane Navigation (Mimics <Ctrl+Space> then Vim key)
+keybind = ctrl+space>h=goto_split:left
+keybind = ctrl+space>j=goto_split:down
+keybind = ctrl+space>k=goto_split:up
+keybind = ctrl+space>l=goto_split:right
+
+# Smart Splits (Ghostty automatically preserves current directory)
+keybind = ctrl+space>s=new_split:down
+keybind = ctrl+space>v=new_split:right
+
+# Tab Management
+keybind = ctrl+space>c=new_tab
+keybind = ctrl+space>x=close_surface
+keybind = ctrl+space>n=next_tab
+keybind = ctrl+space>p=previous_tab
+
+# Rename Tab
+keybind = ctrl+space>R=prompt_tab_title
+
+# Full Screen Mode
+keybind = ctrl+space>f=toggle_maximize

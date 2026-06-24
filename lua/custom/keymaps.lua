@@ -14,6 +14,11 @@ vim.keymap.set('n', '<leader>e', function()
   end, 100)
 end, { desc = 'Show line [E]rror diagnostics' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>tD', function()
+  local enabled = not vim.diagnostic.is_enabled()
+  vim.diagnostic.enable(enabled)
+  vim.notify(enabled and 'Diagnostics: ON' or 'Diagnostics: OFF', vim.log.levels.INFO)
+end, { desc = 'Toggle [D]iagnostics' })
 
 -- [[ Movement & Visual ]]
 vim.keymap.set('n', '<C-d>', '<C-d>zz', { desc = 'Scroll down and center' })
@@ -150,3 +155,26 @@ vim.keymap.set('n', '<leader>lrr', function()
     vim.notify('Rust LSP restarted', vim.log.levels.INFO)
   end, 500)
 end, { desc = '[R]estart LSP' })
+
+vim.keymap.set('n', '<leader>lrc', function()
+  for _, client in ipairs(vim.lsp.get_clients { name = 'rust-analyzer' }) do
+    local settings = vim.deepcopy(client.settings or {})
+    local ra = settings['rust-analyzer'] or {}
+    local check = ra.check or {}
+    local command = check.command or 'check'
+    if command == 'clippy' then
+      check.command = 'check'
+      ra.check = check
+      settings['rust-analyzer'] = ra
+      client.settings = settings
+      vim.notify('Clippy: OFF (using cargo check)', vim.log.levels.INFO)
+    else
+      check.command = 'clippy'
+      ra.check = check
+      settings['rust-analyzer'] = ra
+      client.settings = settings
+      vim.notify('Clippy: ON', vim.log.levels.INFO)
+    end
+    client:notify('workspace/didChangeConfiguration', { settings = settings })
+  end
+end, { desc = 'Toggle [C]lippy' })

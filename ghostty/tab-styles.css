@@ -1,0 +1,71 @@
+/*
+debug: env GTK_DEBUG=interactive ghostty
+https://docs.gtk.org/gtk4/css-overview.html
+https://docs.gtk.org/gtk4/css-properties.html
+*/
+
+tabbar {
+  background-color: #11111b;
+}
+
+headerbar {
+  min-height: 24px;
+  padding: 0;
+  margin: 0;
+  background-color: #11111b;
+}
+
+tabbar tabbox {
+  margin: 0;
+  padding: 2px 4px 0 4px;
+  min-height: 26px;
+  background-color: #11111b;
+  font-family: "JetBrains Mono Nerd Font", monospace;
+  justify-content: start;
+}
+
+tabbar tabbox tab {
+  margin: 0;
+  padding: 2px 8px;
+  color: #585b70;
+  background-color: transparent;
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+tabbar tabbox tab:hover {
+  background-color: #1e1e2e;
+  color: #a6adc8;
+}
+
+tabbar tabbox tab:selected {
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+  border-bottom: 1px solid #89b4fa;
+}
+
+tabbar tabbox tab label {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+tabbar tabbox tab:selected label {
+  color: #cdd6f4;
+}
+
+tabbar tabbox tab button {
+  min-height: 12px;
+  min-width: 12px;
+  padding: 0;
+  margin: 0 0 0 4px;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #585b70;
+}
+
+tabbar tabbox tab button:hover {
+  background-color: #45475a;
+  color: #cdd6f4;
+}
