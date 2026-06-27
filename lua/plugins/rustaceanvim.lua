@@ -11,10 +11,10 @@ return {
         -- rust-analyzer language server configuration
         ['rust-analyzer'] = {
           cargo = {
-            allFeatures = true,
-            loadOutDirsFromCheck = true,
+            allFeatures = false,
+            loadOutDirsFromCheck = false,
             buildScripts = {
-              enable = true,
+              enable = false,
             },
           },
           -- Add clippy lints for Rust if using rust-analyzer
