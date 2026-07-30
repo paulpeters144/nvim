@@ -1,5 +1,5 @@
 return {
-  dir = '/home/paul-ubuntu/repos/bufferbuddy',
+  url = 'https://github.com/paulpeters144/bufferbuddy',
   name = 'bufferbuddy',
   opts = {
     acp = {
