@@ -8,8 +8,17 @@ local config = wezterm.config_builder()
 -- =========================================================
 config.color_scheme = 'Catppuccin Mocha'
 config.window_background_opacity = 0.85
-config.macos_window_background_blur = 30
-config.win32_system_backdrop = 'Acrylic'
+
+-- Platform-specific appearance
+local is_macos = wezterm.target_triple:find 'apple-darwin'
+local is_windows = wezterm.target_triple:find 'windows'
+if is_macos then
+  config.macos_window_background_blur = 30
+end
+if is_windows then
+  config.win32_system_backdrop = 'Acrylic'
+end
+
 config.window_decorations = 'RESIZE'
 
 config.font = wezterm.font 'JetBrainsMono Nerd Font Mono'
@@ -169,6 +178,11 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
   }
 end)
 
-config.default_prog = { 'powershell.exe', '-NoLogo' }
+-- Platform-specific default shell
+if is_windows then
+  config.default_prog = { 'powershell.exe', '-NoLogo' }
+else
+  config.default_prog = { '/bin/zsh', '-l' }
+end
 
 return config

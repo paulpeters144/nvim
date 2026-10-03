@@ -140,7 +140,7 @@ return {
             },
           },
         },
-        -- pyright = {},
+        pyright = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -171,13 +171,17 @@ return {
         'goimports',
         'gofumpt',
         'golangci-lint',
+        'rust-analyzer',
+        'pyright',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
+        automatic_enable = false,
         handlers = {
+          ['rust-analyzer'] = function() end,
           function(server_name)
             local server = servers[server_name]
             if server then

@@ -11,10 +11,10 @@ return {
         -- rust-analyzer language server configuration
         ['rust-analyzer'] = {
           cargo = {
-            allFeatures = true,
-            loadOutDirsFromCheck = true,
+            allFeatures = false,
+            loadOutDirsFromCheck = false,
             buildScripts = {
-              enable = true,
+              enable = false,
             },
           },
           -- Add clippy lints for Rust if using rust-analyzer
@@ -38,9 +38,12 @@ return {
       local extension_path = mason_path:gsub('/', '\\')
       codelldb_path = extension_path .. 'adapter\\codelldb.exe'
       liblldb_path = extension_path .. 'lldb\\bin\\liblldb.dll'
-    else
+    elseif vim.fn.has 'macunix' == 1 then
       codelldb_path = mason_path .. 'adapter/codelldb'
       liblldb_path = mason_path .. 'lldb/lib/liblldb.dylib'
+    else
+      codelldb_path = mason_path .. 'adapter/codelldb'
+      liblldb_path = mason_path .. 'lldb/lib/liblldb.so'
     end
 
     -- If the file exists, configure the adapter
