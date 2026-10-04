@@ -65,8 +65,8 @@ return {
       },
 
       spec = {
-        { '<leader>a', group = 'AI', icon = '🤖' },
-        { '<leader>c', group = 'Code', icon = '📝' },
+        { '<leader>a', group = 'Assistant', mode = { 'n', 'v' }, icon = '🤖' },
+        { '<leader>c', group = 'Code', mode = { 'n', 'v' }, icon = '📝' },
         { '<leader>d', group = 'Debug', icon = '🐞' },
         { '<leader>s', group = 'Search', icon = '🔍' },
         { '<leader>t', group = 'Toggle', icon = '🔧' },
@@ -80,7 +80,7 @@ return {
         { '<leader>lg', group = 'Go', icon = '󰟓' },
         { '<leader>lr', group = 'Rust', icon = '🦀' },
         { '<leader>ln', group = '.NET', icon = '󰪮' },
-        { '<leader>m', group = 'Multicursor', icon = '🖱️' },
+        { '<leader>m', group = 'Multicursor', mode = { 'n', 'x' }, icon = '🖱️' },
       },
     },
   },
