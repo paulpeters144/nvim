@@ -142,6 +142,8 @@ end, { desc = '[S]earch [H]idden files' })
 
 -- [[ Git (Octo) ]]
 vim.keymap.set('n', '<leader>op', '<cmd>Octo pr list<cr>', { desc = '[P]R List' })
+vim.keymap.set('n', '<leader>oP', '<cmd>Octo pr create<cr>', { desc = '[P]R Create' })
+vim.keymap.set('n', '<leader>oc', '<cmd>Octo pr checkout<cr>', { desc = '[C]heckout PR' })
 vim.keymap.set('n', '<leader>oi', '<cmd>Octo issue list<cr>', { desc = '[I]ssue List' })
 vim.keymap.set('n', '<leader>od', '<cmd>Octo discussion list<cr>', { desc = '[D]iscussion List' })
 vim.keymap.set('n', '<leader>on', '<cmd>Octo notification list<cr>', { desc = '[N]otification List' })

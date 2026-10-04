@@ -4,12 +4,15 @@ return {
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope.nvim',
-      'nvim-tree/nvim-web-devicons',
     },
     config = function()
       require('octo').setup {
+        picker = 'telescope',
         enable_builtin = true,
         use_local_fs = true, -- writes to local fs instead of memory for better performance
+        file_panel = {
+          icons = false, -- disabled because nvim-web-devicons is not enabled
+        },
       }
 
       if vim.fn.executable 'gh' == 0 then
