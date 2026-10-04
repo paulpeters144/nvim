@@ -65,6 +65,13 @@ vim.keymap.set('n', '<S-h>', function()
   })
 end, { desc = 'Open [B]uffers (Telescope)' })
 
+-- [[ Tab Management ]]
+vim.keymap.set('n', '<leader>xn', '<cmd>tabnew<cr>', { desc = '[N]ew tab' })
+vim.keymap.set('n', '<leader>xc', '<cmd>tabclose<cr>', { desc = '[C]lose tab' })
+vim.keymap.set('n', '<leader>xo', '<cmd>tabonly<cr>', { desc = 'Close [O]ther tabs' })
+vim.keymap.set('n', '<leader>xh', '<cmd>tabprevious<cr>', { desc = 'Move to [L]eft tab' })
+vim.keymap.set('n', '<leader>xl', '<cmd>tabnext<cr>', { desc = 'Move to [R]ight tab' })
+
 -- [[ Terminal ]]
 vim.keymap.set('n', '<leader>tt', '<cmd>ToggleTerm<cr>', { desc = '[T]oggle [T]erminal' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
