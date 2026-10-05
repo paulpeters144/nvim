@@ -88,6 +88,9 @@ return {
           },
         },
         display = {
+          diff = {
+            enabled = false,
+          },
           chat = {
             window = {
               layout = 'float',
