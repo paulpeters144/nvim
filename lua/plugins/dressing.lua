@@ -17,7 +17,7 @@ return {
         prefer_width = 40,
         min_width = { 20, 0.2 },
         max_width = { 140, 0.9 },
-        title = ' CodeCompanion ',
+        title = ' Inliber ',
         title_pos = 'center',
       },
       select = { enabled = false },
