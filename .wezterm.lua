@@ -8,21 +8,13 @@ local config = wezterm.config_builder()
 -- =========================================================
 config.color_scheme = 'Catppuccin Mocha'
 config.window_background_opacity = 0.85
-
--- Platform-specific appearance
-local is_macos = wezterm.target_triple:find 'apple-darwin'
-local is_windows = wezterm.target_triple:find 'windows'
-if is_macos then
-  config.macos_window_background_blur = 30
-end
-if is_windows then
-  config.win32_system_backdrop = 'Acrylic'
-end
-
+config.macos_window_background_blur = 30
+config.win32_system_backdrop = 'Disable'
 config.window_decorations = 'RESIZE'
 
-config.font = wezterm.font 'JetBrainsMono Nerd Font Mono'
-config.font_size = 11.0
+config.font = wezterm.font 'Inconsolata Nerd Font Mono'
+-- config.font = wezterm.font("JetBrainsMono Nerd Font Mono")
+config.font_size = 12.0
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }
 
 config.window_padding = {
@@ -51,7 +43,7 @@ config.default_cursor_style = 'BlinkingBar'
 config.animation_fps = 1
 config.cursor_blink_rate = 500
 config.term = 'xterm-256color'
-config.prefer_egl = true
+config.prefer_egl = false
 
 -- =========================================================
 -- ⌨️ KEYBINDINGS (Vim-Style)
@@ -62,6 +54,9 @@ config.prefer_egl = true
 config.leader = { key = 'Space', mods = 'CTRL', timeout_milliseconds = 1000 }
 
 config.keys = {
+  -- Paste from Clipboard with Ctrl+V
+  { key = 'v', mods = 'CTRL', action = act.PasteFrom 'Clipboard' },
+
   -- 2. Send "Ctrl-B" to the terminal when pressed twice
   { key = 'b', mods = 'LEADER|CTRL', action = act.SendKey { key = 'b', mods = 'CTRL' } },
 
@@ -95,6 +90,8 @@ config.keys = {
       one_shot = false,
     },
   },
+
+  { key = 'f', mods = 'LEADER', action = act.ToggleFullScreen },
 
   -- Toggle Opacity
   {
@@ -178,11 +175,6 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
   }
 end)
 
--- Platform-specific default shell
-if is_windows then
-  config.default_prog = { 'powershell.exe', '-NoLogo' }
-else
-  config.default_prog = { '/bin/zsh', '-l' }
-end
+config.default_prog = { 'powershell.exe', '-NoLogo' }
 
 return config
