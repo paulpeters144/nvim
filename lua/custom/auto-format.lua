@@ -184,23 +184,29 @@ local function resolve_formatter(path)
   while dir do
     for _, name in ipairs(biome_config_names) do
       if vim.uv.fs_stat(vim.fs.joinpath(dir, name)) then
-        return 'biome'
+        if vim.fn.executable('biome') == 1 then
+          return 'biome'
+        end
       end
     end
     for _, name in ipairs(prettier_config_names) do
       if vim.uv.fs_stat(vim.fs.joinpath(dir, name)) then
-        return 'prettier'
+        if vim.fn.executable('prettier') == 1 then
+          return 'prettier'
+        end
       end
     end
     local pkg = vim.fs.joinpath(dir, 'package.json')
     if vim.uv.fs_stat(pkg) then
       local ok, decoded = pcall(vim.json.decode, table.concat(vim.fn.readfile(pkg), '\n'))
-      if ok then
-        local deps = vim.tbl_extend('force', decoded.dependencies or {}, decoded.devDependencies or {})
-        if deps['@biomejs/biome'] then
+      if ok and type(decoded) == 'table' then
+        local dependencies = type(decoded.dependencies) == 'table' and decoded.dependencies or {}
+        local dev_dependencies = type(decoded.devDependencies) == 'table' and decoded.devDependencies or {}
+        local deps = vim.tbl_extend('force', dependencies, dev_dependencies)
+        if deps['@biomejs/biome'] and vim.fn.executable('biome') == 1 then
           return 'biome'
         end
-        if deps.prettier then
+        if deps.prettier and vim.fn.executable('prettier') == 1 then
           return 'prettier'
         end
       end
@@ -243,7 +249,12 @@ local function format_web(bufnr)
     run({ 'prettier', '--write', path }, 'prettier')
   else
     if file_type_is(path, '.json') then return end
-    local ok, err = pcall(vim.lsp.buf.format, { bufnr = bufnr, async = false, timeout_ms = 2000 })
+    local ok, err = pcall(vim.lsp.buf.format, {
+      bufnr = bufnr,
+      async = false,
+      timeout_ms = 2000,
+      filter = function(client) return client.name == 'ts_ls' end,
+    })
     if not ok then
       vim.notify('auto-format: ts_ls formatting failed: ' .. tostring(err), vim.log.levels.WARN)
     end
@@ -278,35 +289,31 @@ local function format_cs(bufnr)
   end
 end
 
-function M.format(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  if file_type_is(path, '.go') then
-    format_go(bufnr)
-  elseif file_type_is(path, '.rs') then
-    format_rust(bufnr)
-  elseif file_type_is(path, '.dart') then
-    format_dart(bufnr)
-  elseif file_type_is(path, '.py') then
-    format_python(bufnr)
-  elseif file_type_is(path, '.toml') then
-    format_toml(bufnr)
-  elseif file_type_is(path, '.lua') then
-    format_lua(bufnr)
-  elseif file_type_is(path, '.js', '.jsx', '.ts', '.tsx', '.json') then
-    format_web(bufnr)
-  elseif file_type_is(path, '.yaml', '.yml') then
-    format_yaml(bufnr)
-  elseif file_type_is(path, '.cs') then
-    format_cs(bufnr)
-  end
-end
-
 vim.api.nvim_create_autocmd('BufWritePre', {
   callback = function(args)
-    M.format(args.buf)
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
+    local path = vim.api.nvim_buf_get_name(bufnr)
+    if path == '' then return end
+
+    if file_type_is(path, '.go') then
+      format_go(bufnr)
+    elseif file_type_is(path, '.rs') then
+      format_rust(bufnr)
+    elseif file_type_is(path, '.dart') then
+      format_dart(bufnr)
+    elseif file_type_is(path, '.py') then
+      format_python(bufnr)
+    elseif file_type_is(path, '.toml') then
+      format_toml(bufnr)
+    elseif file_type_is(path, '.lua') then
+      format_lua(bufnr)
+    elseif file_type_is(path, '.js', '.jsx', '.ts', '.tsx', '.json') then
+      format_web(bufnr)
+    elseif file_type_is(path, '.yaml', '.yml') then
+      format_yaml(bufnr)
+    elseif file_type_is(path, '.cs') then
+      format_cs(bufnr)
+    end
   end,
 })
 
