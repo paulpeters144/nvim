@@ -136,5 +136,51 @@ return {
       end,
     }
     add_dotnet_mappings()
+
+    local function refresh_cs_diagnostics(bufnr, attempt)
+      attempt = attempt or 1
+      if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
+        return
+      end
+      for _, client in ipairs(vim.lsp.get_clients({ name = 'easy_dotnet', bufnr = bufnr })) do
+        local identifiers = vim
+          .iter(client.dynamic_capabilities.capabilities.diagnosticProvider or {})
+          :map(function(cap)
+            return cap.registerOptions.identifier
+          end)
+          :totable()
+        if #identifiers == 0 then
+          client:request(vim.lsp.protocol.Methods.textDocument_diagnostic, {
+            textDocument = vim.lsp.util.make_text_document_params(bufnr),
+          }, nil, bufnr)
+        else
+          for _, identifier in ipairs(identifiers) do
+            client:request(vim.lsp.protocol.Methods.textDocument_diagnostic, {
+              identifier = identifier,
+              textDocument = vim.lsp.util.make_text_document_params(bufnr),
+            }, nil, bufnr)
+          end
+        end
+      end
+      if attempt < 6 then
+        vim.defer_fn(function()
+          if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
+            return
+          end
+          if vim.tbl_isempty(vim.diagnostic.get(bufnr)) then
+            refresh_cs_diagnostics(bufnr, attempt + 1)
+          end
+        end, 1500)
+      end
+    end
+
+    vim.api.nvim_create_autocmd('BufReadPost', {
+      pattern = '*.cs',
+      callback = function(args)
+        vim.defer_fn(function()
+          refresh_cs_diagnostics(args.buf)
+        end, 500)
+      end,
+    })
   end,
 }
