@@ -30,23 +30,12 @@ local function replace_lines(bufnr, new_lines)
   end
 end
 
-local function new_file_type(path)
-  local extension = vim.fn.fnamemodify(path, ':e'):lower()
-  return {
-    is_go = function() return extension == 'go' end,
-    is_rust = function() return extension == 'rs' end,
-    is_dart = function() return extension == 'dart' end,
-    is_python = function() return extension == 'py' end,
-    is_toml = function() return extension == 'toml' end,
-    is_lua = function() return extension == 'lua' end,
-    is_js = function() return extension == 'js' end,
-    is_jsx = function() return extension == 'jsx' end,
-    is_ts = function() return extension == 'ts' end,
-    is_tsx = function() return extension == 'tsx' end,
-    is_json = function() return extension == 'json' end,
-    is_yaml = function() return extension == 'yaml' or extension == 'yml' end,
-    is_cs = function() return extension == 'cs' end,
-  }
+local function file_type_is(path, ...)
+  local extension = '.' .. vim.fn.fnamemodify(path, ':e'):lower()
+  for _, ext in ipairs { ... } do
+    if extension == ext then return true end
+  end
+  return false
 end
 
 local function format_go(bufnr)
@@ -175,109 +164,90 @@ local function format_lua(bufnr)
   replace_lines(bufnr, new_lines)
 end
 
-local function format_js(bufnr)
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
+local biome_config_names = { 'biome.json', 'biome.jsonc' }
+local prettier_config_names = {
+  '.prettierrc',
+  '.prettierrc.json',
+  '.prettierrc.yaml',
+  '.prettierrc.yml',
+  '.prettierrc.toml',
+  '.prettierrc.js',
+  '.prettierrc.cjs',
+  '.prettierrc.mjs',
+  'prettier.config.js',
+  'prettier.config.cjs',
+  'prettier.config.mjs',
+}
 
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'prettier', '--write', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: js failed', vim.log.levels.WARN)
-    return
+local function resolve_formatter(path)
+  local dir = vim.fs.dirname(path)
+  while dir do
+    for _, name in ipairs(biome_config_names) do
+      if vim.uv.fs_stat(vim.fs.joinpath(dir, name)) then
+        return 'biome'
+      end
+    end
+    for _, name in ipairs(prettier_config_names) do
+      if vim.uv.fs_stat(vim.fs.joinpath(dir, name)) then
+        return 'prettier'
+      end
+    end
+    local pkg = vim.fs.joinpath(dir, 'package.json')
+    if vim.uv.fs_stat(pkg) then
+      local ok, decoded = pcall(vim.json.decode, table.concat(vim.fn.readfile(pkg), '\n'))
+      if ok then
+        local deps = vim.tbl_extend('force', decoded.dependencies or {}, decoded.devDependencies or {})
+        if deps['@biomejs/biome'] then
+          return 'biome'
+        end
+        if deps.prettier then
+          return 'prettier'
+        end
+      end
+    end
+    local parent = vim.fs.dirname(dir)
+    if parent == dir then break end
+    dir = parent
   end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
+  return nil
 end
 
-local function format_jsx(bufnr)
+local function format_web(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
   if path == '' then return end
 
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
   local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
 
-  vim.fn.system(build_command { 'prettier', '--write', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: jsx failed', vim.log.levels.WARN)
-    return
+  local function run(args, label)
+    local content = table.concat(lines, sep)
+    if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
+    vim.fn.writefile(content, path, 'b')
+
+    vim.fn.system(build_command(args))
+    if vim.v.shell_error ~= 0 then
+      vim.notify('auto-format: ' .. label .. ' failed', vim.log.levels.WARN)
+      return
+    end
+
+    local new_lines = vim.fn.readfile(path)
+    if #new_lines == 0 and #lines > 0 then return end
+    replace_lines(bufnr, new_lines)
   end
 
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
-end
+  local formatter = resolve_formatter(path)
 
-local function format_ts(bufnr)
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'prettier', '--write', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: ts failed', vim.log.levels.WARN)
-    return
+  if formatter == 'biome' then
+    run({ 'biome', 'format', '--write', path }, 'biome')
+  elseif formatter == 'prettier' then
+    run({ 'prettier', '--write', path }, 'prettier')
+  else
+    if file_type_is(path, '.json') then return end
+    local ok, err = pcall(vim.lsp.buf.format, { bufnr = bufnr, async = false, timeout_ms = 2000 })
+    if not ok then
+      vim.notify('auto-format: ts_ls formatting failed: ' .. tostring(err), vim.log.levels.WARN)
+    end
   end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
-end
-
-local function format_tsx(bufnr)
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'prettier', '--write', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: tsx failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
-end
-
-local function format_json(bufnr)
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'prettier', '--write', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: json failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
 end
 
 local function format_yaml(bufnr)
@@ -313,33 +283,23 @@ function M.format(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
   if path == '' then return end
 
-  local file_type = new_file_type(path)
-
-  if file_type.is_go() then
+  if file_type_is(path, '.go') then
     format_go(bufnr)
-  elseif file_type.is_rust() then
+  elseif file_type_is(path, '.rs') then
     format_rust(bufnr)
-  elseif file_type.is_dart() then
+  elseif file_type_is(path, '.dart') then
     format_dart(bufnr)
-  elseif file_type.is_python() then
+  elseif file_type_is(path, '.py') then
     format_python(bufnr)
-  elseif file_type.is_toml() then
+  elseif file_type_is(path, '.toml') then
     format_toml(bufnr)
-  elseif file_type.is_lua() then
+  elseif file_type_is(path, '.lua') then
     format_lua(bufnr)
-  elseif file_type.is_js() then
-    format_js(bufnr)
-  elseif file_type.is_jsx() then
-    format_jsx(bufnr)
-  elseif file_type.is_ts() then
-    format_ts(bufnr)
-  elseif file_type.is_tsx() then
-    format_tsx(bufnr)
-  elseif file_type.is_json() then
-    format_json(bufnr)
-  elseif file_type.is_yaml() then
+  elseif file_type_is(path, '.js', '.jsx', '.ts', '.tsx', '.json') then
+    format_web(bufnr)
+  elseif file_type_is(path, '.yaml', '.yml') then
     format_yaml(bufnr)
-  elseif file_type.is_cs() then
+  elseif file_type_is(path, '.cs') then
     format_cs(bufnr)
   end
 end
