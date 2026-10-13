@@ -42,6 +42,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.g.snacks_animate = false
 vim.opt.relativenumber = false
 
+vim.o.belloff = 'all'
+vim.o.errorbells = false
+vim.o.visualbell = true
+
 
 if vim.fn.has 'win32' == 1 then
   if vim.fn.executable 'pwsh' == 1 then

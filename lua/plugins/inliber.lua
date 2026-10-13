@@ -7,17 +7,17 @@ local function claude_adapter()
   return require('inliber.adapters').extend('anthropic', {
     schema = {
       model = {
-        default = 'claude-haiku-4-5',
+        default = 'claude-haiku-5-5',
         choices = {
           ['claude-sonnet-5'] = {
             formatted_name = 'Claude Sonnet 5',
             meta = { context_window = 200000, max_tokens = 64000 },
             opts = { can_reason = true, has_vision = true },
           },
-          ['claude-haiku-4-5'] = {
-            formatted_name = 'Claude Haiku 4.5',
+          ['claude-haiku-5-5'] = {
+            formatted_name = 'Claude Haiku 5.5',
             meta = { context_window = 200000, max_tokens = 64000 },
-            opts = { can_reason = true, has_vision = true },
+            opts = { can_reason = false, has_vision = true },
           },
         },
       },
