@@ -1,25 +1,13 @@
 -- Inliber
 -- https://github.com/paulpeters144/inliber.nvim
--- Talks to Anthropic's API directly through the `claude` adapter below. Requires
--- the ANTHROPIC_API_KEY env var.
+-- Uses OpenCode through the Agent Client Protocol (ACP), with
+-- DeepSeek V4.1 Flash (opencode-go/deepseek-v4.1-flash) as the model.
 
-local function claude_adapter()
-  return require('inliber.adapters').extend('anthropic', {
-    schema = {
-      model = {
-        default = 'claude-haiku-5-5',
-        choices = {
-          ['claude-sonnet-5'] = {
-            formatted_name = 'Claude Sonnet 5',
-            meta = { context_window = 200000, max_tokens = 64000 },
-            opts = { can_reason = true, has_vision = true },
-          },
-          ['claude-haiku-5-5'] = {
-            formatted_name = 'Claude Haiku 5.5',
-            meta = { context_window = 200000, max_tokens = 64000 },
-            opts = { can_reason = false, has_vision = true },
-          },
-        },
+local function opencode_adapter()
+  return require('inliber.adapters').extend('opencode', {
+    defaults = {
+      session_config_options = {
+        model = 'opencode-go/deepseek-v4.1-flash',
       },
     },
   })
@@ -27,7 +15,10 @@ end
 
 return {
   {
-    'paulpeters144/inliber.nvim',
+    -- Use the local checkout (contains the ACP refactor) instead of pulling
+    -- from GitHub
+    dir = 'C:/Users/paulp/Documents/repo/inliber.nvim',
+    name = 'inliber.nvim',
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-treesitter/nvim-treesitter',
@@ -43,8 +34,8 @@ return {
     config = function()
       require('inliber').setup {
         adapters = {
-          http = {
-            claude = claude_adapter,
+          acp = {
+            opencode = opencode_adapter,
           },
         },
         display = {
@@ -54,11 +45,7 @@ return {
         },
         interactions = {
           inline = {
-            adapter = 'claude',
-            tools = {
-              enabled = true,
-              opts = { approval_mode = 'auto' },
-            },
+            adapter = 'opencode',
           },
         },
       }
