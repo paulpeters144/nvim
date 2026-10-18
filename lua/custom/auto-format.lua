@@ -283,7 +283,19 @@ local function format_yaml(bufnr)
 end
 
 local function format_cs(bufnr)
-  local ok, err = pcall(vim.lsp.buf.format, { bufnr = bufnr, async = false, timeout_ms = 2000 })
+  local has_formatter = false
+  for _, client in ipairs(vim.lsp.get_clients { bufnr = bufnr }) do
+    if client:supports_method(vim.lsp.protocol.Methods.textDocument_formatting, bufnr) then
+      has_formatter = true
+      break
+    end
+  end
+  if not has_formatter then
+    vim.notify('auto-format: no C# LSP client with formatting attached', vim.log.levels.WARN)
+    return
+  end
+
+  local ok, err = pcall(vim.lsp.buf.format, { bufnr = bufnr, async = false, timeout_ms = 5000 })
   if not ok then
     vim.notify('auto-format: LSP formatting failed: ' .. tostring(err), vim.log.levels.WARN)
   end
@@ -291,7 +303,7 @@ end
 
 vim.api.nvim_create_autocmd('BufWritePre', {
   callback = function(args)
-    bufnr = bufnr or vim.api.nvim_get_current_buf()
+    local bufnr = args.buf
     local path = vim.api.nvim_buf_get_name(bufnr)
     if path == '' then return end
 

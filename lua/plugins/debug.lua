@@ -199,7 +199,9 @@ return {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
         'codelldb',
-        'netcoredbg',
+        -- NOTE: 'netcoredbg' is bundled with easy-dotnet-server, so it is no
+        -- longer installed via Mason. C#/.NET debugging is handled entirely by
+        -- easy-dotnet (see lua/plugins/easy-dotnet.lua).
       },
     }
 
@@ -251,85 +253,10 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    dap.adapters.coreclr = function(cb, _)
-      local ok, mason_registry = pcall(require, 'mason-registry')
-      local executable = 'netcoredbg'
-      if ok and mason_registry.is_installed 'netcoredbg' then
-        local path = vim.fn.stdpath 'data' .. '/mason/packages/netcoredbg/netcoredbg/netcoredbg.exe'
-        if vim.fn.executable(path) == 1 then
-          executable = path
-        end
-      end
-
-      cb {
-        type = 'executable',
-        command = executable,
-        args = { '--interpreter=vscode' },
-        options = {
-          detached = true,
-        },
-      }
-    end
-
-    local last_project_dir = nil
-    dap.configurations.cs = {
-      {
-        type = 'coreclr',
-        name = 'Launch Project (Select)',
-        request = 'launch',
-        program = function()
-          return coroutine.create(function(dap_run_co)
-            local projects = vim.fn.globpath(vim.fn.getcwd(), '**/*.csproj', 0, 1)
-            if #projects == 0 then
-              vim.ui.input({ prompt = 'Path to DLL', default = vim.fn.getcwd() .. '/bin/Debug/', completion = 'file' }, function(input)
-                coroutine.resume(dap_run_co, input)
-              end)
-              return
-            end
-
-            vim.ui.select(projects, {
-              prompt = 'Select project to debug:',
-              format_item = function(item)
-                return vim.fn.fnamemodify(item, ':t')
-              end,
-            }, function(project_path)
-              if not project_path then
-                coroutine.resume(dap_run_co, nil)
-                return
-              end
-              local project_dir = vim.fn.fnamemodify(project_path, ':h')
-              local project_name = vim.fn.fnamemodify(project_path, ':t:r')
-              last_project_dir = project_dir
-
-              local dlls = vim.fn.globpath(project_dir, 'bin/Debug/**/*.dll', 0, 1)
-              local matches = {}
-              for _, dll in ipairs(dlls) do
-                if vim.fn.fnamemodify(dll, ':t:r') == project_name then
-                  table.insert(matches, dll)
-                end
-              end
-
-              if #matches == 0 then
-                vim.ui.input({ prompt = 'Path to DLL', default = project_dir .. '/bin/Debug/', completion = 'file' }, function(input)
-                  coroutine.resume(dap_run_co, input)
-                end)
-              elseif #matches == 1 then
-                coroutine.resume(dap_run_co, matches[1])
-              else
-                vim.ui.select(matches, {
-                  prompt = 'Select build output:',
-                }, function(choice)
-                  coroutine.resume(dap_run_co, choice)
-                end)
-              end
-            end)
-          end)
-        end,
-        cwd = function()
-          return last_project_dir or vim.fn.getcwd()
-        end,
-        stopAtEntry = false,
-      },
-    }
+    -- NOTE: C#/.NET debugging is handled entirely by easy-dotnet-server, which
+    -- bundles netcoredbg and auto-registers its own DAP configuration via
+    -- `debugger.auto_register_dap`. Any manual `dap.adapters.coreclr` or
+    -- `dap.configurations.cs` here would conflict with it, so they are removed.
+    -- Use `:Dotnet debug` / `<leader>lnd` instead of dap's run_last for C#.
   end,
 }

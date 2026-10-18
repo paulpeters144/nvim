@@ -1,186 +1,176 @@
+-- easy-dotnet.nvim configuration
+-- Plugin: https://github.com/GustavEikaas/easy-dotnet.nvim
+--
+-- NOTE: easy-dotnet now does most of its work in a companion C# server
+-- (the `EasyDotnet` global dotnet tool). Keep it up to date with:
+--   :Dotnet _server update
+-- or:
+--   dotnet tool update -g EasyDotnet
+--
+-- Requirements:
+--   * Neovim 0.11+ (built with LuaJIT)
+--   * dotnet tool install -g EasyDotnet
+--   * a picker: telescope.nvim (installed), fzf-lua, or snacks.nvim
+
+-- Keymaps (all under <leader>ln, leader = <space>):
+--
+--   Run:      r  run default | R  run (pick) | rp  run + launch profile
+--   Debug:    d  debug default | D  debug (pick) | dp  debug + launch profile
+--   Test:     t  test runner | tt  test (pick) | ts  test solution
+--   Build:    b  build (pick) | B  build solution | bq  build + quickfix
+--             bc  clean | br  restore
+--   Watch:    w  watch default | W  watch (pick)
+--   Solution: s  select | sa  add project | sr  remove project
+--   Package:  p  add package | P  remove package | o  outdated packages
+--   New:      n  new template
+--   Secrets:  S  user secrets
+--   Diag:     x  workspace | xe  errors | xw  warnings
+--   EF:       e  db update | eD  db update (pick) | el  migrations list
+--             em  migrations add | eR  migrations remove
+--   Terminal: T  managed terminal toggle
+--   Server:   u  update | h  restart | i  checkhealth | X  reset
+
 local function add_dotnet_mappings()
   local dotnet = require 'easy-dotnet'
+
+  local function map(lhs, cmd, desc)
+    vim.keymap.set('n', lhs, function()
+      vim.cmd(cmd)
+    end, { desc = desc, nowait = true })
+  end
 
   vim.api.nvim_create_user_command('Secrets', function()
     dotnet.secrets()
   end, {})
 
-  vim.keymap.set('n', '<A-t>', function()
-    vim.cmd 'Dotnet testrunner'
-  end, { desc = '.NET [T]est Runner', nowait = true })
+  -- Run
+  map('<leader>lnr', 'Dotnet run default', 'Run default')
+  map('<leader>lnR', 'Dotnet run', 'Run (pick)')
+  map('<leader>lnrp', 'Dotnet run profile default', 'Run + launch profile')
 
-  vim.keymap.set('n', '<C-p>', function()
-    vim.cmd 'Dotnet debug profile default'
-  end, { desc = '.NET Debug [P]rofile', nowait = true })
+  -- Debug
+  map('<leader>lnd', 'Dotnet debug default', 'Debug default')
+  map('<leader>lnD', 'Dotnet debug', 'Debug (pick)')
+  map('<leader>lndp', 'Dotnet debug profile default', 'Debug + launch profile')
 
-  vim.keymap.set('n', '<leader>lns', function()
-    vim.cmd 'Dotnet solution select'
-  end, { desc = '[S]olution Select' })
+  -- Test
+  map('<leader>lnt', 'Dotnet testrunner', 'Test runner')
+  map('<leader>lntt', 'Dotnet test', 'Test (pick)')
+  map('<leader>lnts', 'Dotnet test solution', 'Test solution')
 
-  vim.keymap.set('n', '<leader>lnp', function()
-    vim.cmd 'Dotnet project view'
-  end, { desc = '[P]roject View' })
+  -- Build / clean / restore
+  map('<leader>lnb', 'Dotnet build', 'Build (pick)')
+  map('<leader>lnB', 'Dotnet build solution', 'Build solution')
+  map('<leader>lnbq', 'Dotnet build quickfix', 'Build + quickfix')
+  map('<leader>lnbc', 'Dotnet clean', 'Clean')
+  map('<leader>lnbr', 'Dotnet restore', 'Restore')
 
-  vim.keymap.set('n', '<leader>lnr', function()
-    local projects = vim.fn.globpath(vim.fn.getcwd(), '**/*.csproj', 0, 1)
-    if #projects == 0 then
-      vim.notify('No projects found', vim.log.levels.WARN)
-      return
-    end
+  -- Watch
+  map('<leader>lnw', 'Dotnet watch default', 'Watch default')
+  map('<leader>lnW', 'Dotnet watch', 'Watch (pick)')
 
-    local function run_project(path)
-      local cwd = vim.fn.fnamemodify(path, ':h')
-      require('toggleterm').exec(string.format('dotnet run --project "%s"\r', path), nil, nil, cwd, 'float') 
-    end
+  -- Solution
+  map('<leader>lns', 'Dotnet solution select', 'Solution select')
+  map('<leader>lnsa', 'Dotnet solution add', 'Solution add')
+  map('<leader>lnsr', 'Dotnet solution remove', 'Solution remove')
 
-    if #projects == 1 then
-      run_project(projects[1])
-    else
-      vim.ui.select(projects, {
-        prompt = 'Select project to run:',
-        format_item = function(item)
-          return vim.fn.fnamemodify(item, ':t')
-        end,
-      }, function(path)
-        if path then
-          run_project(path)
-        end
-      end)
-    end
-  end, { desc = '[R]un Project' })
+  -- Packages
+  map('<leader>lnp', 'Dotnet add package', 'Add package')
+  map('<leader>lnP', 'Dotnet remove package', 'Remove package')
+  map('<leader>lno', 'Dotnet outdated', 'Outdated packages')
 
-  vim.keymap.set('n', '<leader>lnd', function()
-    -- Use manual DAP configuration instead of easy-dotnet's problematic debugger
-    require('dap').continue()
-  end, { desc = '[D]ebug (DAP)' })
+  -- New template
+  map('<leader>lnn', 'Dotnet new', 'New template')
 
-  vim.keymap.set('n', '<leader>lnu', function()
-    vim.cmd 'Dotnet _server update'
-  end, { desc = 'Server [U]pdate' })
+  -- User secrets
+  map('<leader>lnS', 'Secrets', 'User secrets')
 
-  vim.keymap.set('n', '<leader>lni', function()
-    vim.cmd 'checkhealth easy-dotnet'
-  end, { desc = '[I]nfo (checkhealth)' })
+  -- Workspace diagnostics
+  map('<leader>lnx', 'Dotnet diagnostic', 'Workspace diagnostics')
+  map('<leader>lnxe', 'Dotnet diagnostic errors', 'Diagnostics: errors')
+  map('<leader>lnxw', 'Dotnet diagnostic warnings', 'Diagnostics: warnings')
 
-  vim.keymap.set('n', '<leader>lnh', function()
-    vim.cmd 'Dotnet _server restart'
-  end, { desc = 'Server Restart' })
+  -- Entity Framework (requires dotnet-ef tool)
+  map('<leader>lne', 'Dotnet ef database update', 'EF database update')
+  map('<leader>lneD', 'Dotnet ef database update pick', 'EF database update (pick)')
+  map('<leader>lnel', 'Dotnet ef migrations list', 'EF migrations list')
+  map('<leader>lneR', 'Dotnet ef migrations remove', 'EF migrations remove')
+  vim.keymap.set('n', '<leader>lnem', function()
+    vim.ui.input({ prompt = 'Migration name: ' }, function(name)
+      if name and name ~= '' then
+        vim.cmd('Dotnet ef migrations add ' .. name)
+      end
+    end)
+  end, { desc = 'EF migrations add', nowait = true })
 
-  vim.keymap.set('n', '<leader>lnx', function()
-    require('easy-dotnet').reset()
-  end, { desc = 'Reset Plugin' })
+  -- Managed terminal
+  map('<leader>lnT', 'Dotnet terminal toggle', 'Managed terminal toggle')
+
+  -- Server / utility
+  map('<leader>lnu', 'Dotnet _server update', 'Server update')
+  map('<leader>lnh', 'Dotnet _server restart', 'Server restart')
+  map('<leader>lni', 'checkhealth easy-dotnet', 'Checkhealth')
+  vim.keymap.set('n', '<leader>lnX', function()
+    dotnet.reset()
+  end, { desc = 'Reset plugin', nowait = true })
 end
 
 return {
   'GustavEikaas/easy-dotnet.nvim',
-  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    'nvim-telescope/telescope.nvim',
+    'mfussenegger/nvim-dap', -- used by the built-in debugger
+  },
   config = function()
     local dotnet = require 'easy-dotnet'
 
-    local netcoredbg_path = 'netcoredbg'
-    local ok, mason_registry = pcall(require, 'mason-registry')
-    if ok and mason_registry.is_installed 'netcoredbg' then
-      local path = vim.fn.stdpath 'data' .. '/mason/packages/netcoredbg/netcoredbg/netcoredbg.exe'
-      if vim.fn.executable(path) == 1 then
-        netcoredbg_path = path
-      end
-    end
-
     dotnet.setup {
+      -- Picker used for solution/project/test selection.
+      -- Leave nil to auto-detect (snacks -> fzf -> telescope -> basic).
+      picker = 'telescope',
+
       server = {
-        ---@type nil | "Off" | "Critical" | "Error" | "Warning" | "Information" | "Verbose" | "All"
-        log_level = 'Verbose',
+        -- Set true for .NET Framework support on Windows (requires Visual Studio + nuget CLI)
         use_visual_studio = false,
+        ---@type nil | "Off" | "Critical" | "Error" | "Warning" | "Information" | "Verbose" | "All"
+        log_level = nil, -- avoid "Verbose" unless debugging the plugin itself
       },
+
       test_runner = {
-        enable_buffer_test_execution = true,
+        ---@type "split" | "vsplit" | "float" | "buf"
         viewmode = 'float',
-        noBuild = false,
+        -- `noBuild` and `enable_buffer_test_execution` were removed in
+        -- Test Runner v2: buffer test execution is always enabled now.
       },
+
       projx_lsp = {
-        enabled = true,
+        enabled = true, -- package autocomplete in .csproj (enabled by default)
       },
-      notifications = {
-        handler = false,
-      },
+
       debugger = {
-        bin_path = netcoredbg_path,
-        console = 'internalConsole',
+        -- netcoredbg is bundled with the EasyDotnet server, so bin_path is
+        -- optional. Only set bin_path to override with your own adapter.
+        engine = 'netcoredbg', -- "netcoredbg" | "dncdbg" | "sharpdbg"
+        console = 'integratedTerminal', -- or "externalTerminal" for a detached OS window
       },
+
+      -- `notifications.handler` defaults to a spinner that reports job results
+      -- (e.g. "Server restarted" after `:Dotnet _server restart`). Leaving it
+      -- default keeps that success feedback visible. Only set it to `false` if
+      -- you use lualine's dotnet components and want to avoid double logging.
+
       auto_bootstrap_namespace = {
-        type = 'file_scoped',
+        type = 'file_scoped', -- "file_scoped" | "block_scoped"
         enabled = true,
       },
-      terminal = function(path, action, args, ctx)
-        -- path is the absolute path to the project file (.csproj)
-        local commands = {
-          run = function()
-            return string.format('dotnet run --project "%s" %s', path, args)
-          end,
-          test = function()
-            return string.format('dotnet test "%s" %s', path, args)
-          end,
-          restore = function()
-            return string.format('dotnet restore "%s" %s', path, args)
-          end,
-          build = function()
-            return string.format('dotnet build "%s" %s', path, args)
-          end,
-          watch = function()
-            return string.format('dotnet watch --project "%s" %s', path, args)
-          end,
-        }
 
-        local command = commands[action]() .. '\r'
-        require('toggleterm').exec(command, nil, nil, nil, 'float')
-      end,
+      -- NOTE: the old `terminal = function(...)` callback was removed.
+      -- Run/build/test/watch/restore now use the built-in managed terminal.
+      -- Customize it via `managed_terminal` (e.g. { auto_hide = true }), or
+      -- use `external_terminal` to spawn an OS window instead.
     }
+
     add_dotnet_mappings()
-
-    local function refresh_cs_diagnostics(bufnr, attempt)
-      attempt = attempt or 1
-      if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
-        return
-      end
-      for _, client in ipairs(vim.lsp.get_clients({ name = 'easy_dotnet', bufnr = bufnr })) do
-        local identifiers = vim
-          .iter(client.dynamic_capabilities.capabilities.diagnosticProvider or {})
-          :map(function(cap)
-            return cap.registerOptions.identifier
-          end)
-          :totable()
-        if #identifiers == 0 then
-          client:request(vim.lsp.protocol.Methods.textDocument_diagnostic, {
-            textDocument = vim.lsp.util.make_text_document_params(bufnr),
-          }, nil, bufnr)
-        else
-          for _, identifier in ipairs(identifiers) do
-            client:request(vim.lsp.protocol.Methods.textDocument_diagnostic, {
-              identifier = identifier,
-              textDocument = vim.lsp.util.make_text_document_params(bufnr),
-            }, nil, bufnr)
-          end
-        end
-      end
-      if attempt < 6 then
-        vim.defer_fn(function()
-          if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
-            return
-          end
-          if vim.tbl_isempty(vim.diagnostic.get(bufnr)) then
-            refresh_cs_diagnostics(bufnr, attempt + 1)
-          end
-        end, 1500)
-      end
-    end
-
-    vim.api.nvim_create_autocmd('BufReadPost', {
-      pattern = '*.cs',
-      callback = function(args)
-        vim.defer_fn(function()
-          refresh_cs_diagnostics(args.buf)
-        end, 500)
-      end,
-    })
   end,
 }
