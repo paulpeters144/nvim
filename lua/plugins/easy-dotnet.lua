@@ -113,6 +113,13 @@ local function add_dotnet_mappings()
   vim.keymap.set('n', '<leader>lnX', function()
     dotnet.reset()
   end, { desc = 'Reset plugin', nowait = true })
+
+  -- Roslyn language server (the process that produces C# diagnostics/hover/rename).
+  -- Restart it to clear stale diagnostics after a manual namespace/file rename.
+  vim.keymap.set('n', '<leader>lnl', function()
+    vim.cmd 'lsp restart easy_dotnet'
+    vim.notify('C# Roslyn LSP restarted', vim.log.levels.INFO)
+  end, { desc = 'Restart Roslyn LSP', nowait = true })
 end
 
 return {
