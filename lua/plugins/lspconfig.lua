@@ -106,23 +106,8 @@ return {
         virtual_text = false,
       }
 
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-
-      if vim.lsp.config then
-        vim.lsp.config('lua_ls', {
-          root_markers = {
-            '.luarc.json',
-            '.luarc.jsonc',
-            '.luacheckrc',
-            '.stylua.toml',
-            'stylua.toml',
-            'selene.toml',
-            'selene.yml',
-            '.git',
-          },
-        })
-      end
-
+      -- blink.cmp merges its capabilities into vim.lsp.config('*') when it loads.
+      -- mason-lspconfig v2 dropped `handlers`; installed servers are enabled with vim.lsp.enable.
       local servers = {
         -- clangd = {},
         gopls = {
@@ -153,6 +138,16 @@ return {
           -- cmd = { ... },
           -- filetypes = { ... },
           -- capabilities = {},
+          root_markers = {
+            '.luarc.json',
+            '.luarc.jsonc',
+            '.luacheckrc',
+            '.stylua.toml',
+            'stylua.toml',
+            'selene.toml',
+            'selene.yml',
+            '.git',
+          },
           settings = {
             Lua = {
               completion = {
@@ -164,6 +159,10 @@ return {
           },
         },
       }
+
+      for server_name, server in pairs(servers) do
+        vim.lsp.config(server_name, server)
+      end
 
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
@@ -179,17 +178,9 @@ return {
 
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        automatic_enable = false,
-        handlers = {
-          ['rust-analyzer'] = function() end,
-          function(server_name)
-            local server = servers[server_name]
-            if server then
-              server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-              require('lspconfig')[server_name].setup(server)
-            end
-          end,
+        -- rustaceanvim starts rust-analyzer itself.
+        automatic_enable = {
+          exclude = { 'rust_analyzer' },
         },
       }
     end,

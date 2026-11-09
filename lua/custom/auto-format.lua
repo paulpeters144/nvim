@@ -1,17 +1,5 @@
 local M = {}
 
-local function build_command(args)
-  local out = {}
-  for i, arg in ipairs(args) do
-    if i == 1 then
-      out[#out + 1] = arg
-    else
-      out[#out + 1] = vim.fn.shellescape(arg)
-    end
-  end
-  return table.concat(out, ' ')
-end
-
 local function replace_lines(bufnr, new_lines)
   local win = vim.api.nvim_get_current_win()
   if vim.api.nvim_win_get_buf(win) ~= bufnr then
@@ -38,130 +26,83 @@ local function file_type_is(path, ...)
   return false
 end
 
-local function format_go(bufnr)
+local function lines_from_stdout(stdout)
+  stdout = (stdout or ''):gsub('\r\n', '\n'):gsub('\r', '\n')
+  local new_lines = vim.split(stdout, '\n', { plain = true })
+  if new_lines[#new_lines] == '' then
+    table.remove(new_lines)
+  end
+  return new_lines
+end
+
+-- Formatters read the buffer on stdin and print the result. They must not
+-- write the file: a write here changes the mtime, and the :w that follows
+-- then warns that the file changed since it was read.
+local function format_stdin(bufnr, label, cmd, opts)
+  opts = opts or {}
   local path = vim.api.nvim_buf_get_name(bufnr)
   if path == '' then return end
 
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
+  local content = table.concat(lines, '\n')
+  if vim.bo[bufnr].eol and #lines > 0 then
+    content = content .. '\n'
+  end
 
-  vim.fn.system(build_command { 'gofmt', '-w', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: go failed', vim.log.levels.WARN)
+  local sys_opts = { stdin = content }
+  if opts.cwd then
+    sys_opts.cwd = opts.cwd
+  end
+
+  local ok, result = pcall(vim.system, cmd, sys_opts)
+  if not ok then
+    vim.notify('auto-format: ' .. label .. ' failed: ' .. tostring(result), vim.log.levels.WARN)
     return
   end
 
-  local new_lines = vim.fn.readfile(path)
+  result = result:wait()
+  if result.code ~= 0 then
+    vim.notify('auto-format: ' .. label .. ' failed', vim.log.levels.WARN)
+    return
+  end
+
+  local new_lines = lines_from_stdout(result.stdout)
   if #new_lines == 0 and #lines > 0 then return end
   replace_lines(bufnr, new_lines)
+end
+
+local function format_go(bufnr)
+  format_stdin(bufnr, 'go', { 'gofmt' })
 end
 
 local function format_rust(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'rustfmt', '--edition', '2021', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: rust failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
+  -- rustfmt only walks parent dirs for rustfmt.toml when cwd is the file's directory.
+  format_stdin(bufnr, 'rust', { 'rustfmt', '--edition', '2021', '--emit', 'stdout' }, {
+    cwd = vim.fs.dirname(path),
+  })
 end
 
 local function format_dart(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'dart', 'format', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: dart failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
+  format_stdin(bufnr, 'dart', { 'dart', 'format', '--stdin-name', path, '--output', 'show' })
 end
 
 local function format_python(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'black', '--quiet', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: python failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
+  format_stdin(bufnr, 'python', { 'black', '--quiet', '-' }, {
+    cwd = vim.fs.dirname(path),
+  })
 end
 
 local function format_toml(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'taplo', 'fmt', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: toml failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
+  format_stdin(bufnr, 'toml', { 'taplo', 'fmt', '--stdin-filepath', path, '-' })
 end
 
 local function format_lua(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'stylua', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: lua failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
+  format_stdin(bufnr, 'lua', { 'stylua', '--stdin-filepath', path, '-' })
 end
 
 local biome_config_names = { 'biome.json', 'biome.jsonc' }
@@ -222,31 +163,11 @@ local function format_web(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
   if path == '' then return end
 
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-
-  local function run(args, label)
-    local content = table.concat(lines, sep)
-    if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-    vim.fn.writefile(content, path, 'b')
-
-    vim.fn.system(build_command(args))
-    if vim.v.shell_error ~= 0 then
-      vim.notify('auto-format: ' .. label .. ' failed', vim.log.levels.WARN)
-      return
-    end
-
-    local new_lines = vim.fn.readfile(path)
-    if #new_lines == 0 and #lines > 0 then return end
-    replace_lines(bufnr, new_lines)
-  end
-
   local formatter = resolve_formatter(path)
-
   if formatter == 'biome' then
-    run({ 'biome', 'format', '--write', path }, 'biome')
+    format_stdin(bufnr, 'biome', { 'biome', 'format', '--stdin-file-path', path })
   elseif formatter == 'prettier' then
-    run({ 'prettier', '--write', path }, 'prettier')
+    format_stdin(bufnr, 'prettier', { 'prettier', '--stdin-filepath', path })
   else
     if file_type_is(path, '.json') then return end
     local ok, err = pcall(vim.lsp.buf.format, {
@@ -263,23 +184,7 @@ end
 
 local function format_yaml(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == '' then return end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local sep = vim.bo[bufnr].fileformat == 'dos' and '\r\n' or '\n'
-  local content = table.concat(lines, sep)
-  if vim.bo[bufnr].eol and #lines > 0 then content = content .. sep end
-  vim.fn.writefile(content, path, 'b')
-
-  vim.fn.system(build_command { 'prettier', '--write', path })
-  if vim.v.shell_error ~= 0 then
-    vim.notify('auto-format: yaml failed', vim.log.levels.WARN)
-    return
-  end
-
-  local new_lines = vim.fn.readfile(path)
-  if #new_lines == 0 and #lines > 0 then return end
-  replace_lines(bufnr, new_lines)
+  format_stdin(bufnr, 'yaml', { 'prettier', '--stdin-filepath', path })
 end
 
 local function format_cs(bufnr)

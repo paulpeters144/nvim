@@ -13,6 +13,9 @@ return {
           cargo = {
             allFeatures = false,
             loadOutDirsFromCheck = false,
+            -- Keep rust-analyzer artifacts out of target/debug so cargo
+            -- builds do not delete proc-macro DLLs the editor has open.
+            targetDir = true,
             buildScripts = {
               enable = false,
             },

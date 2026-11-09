@@ -1,7 +1,8 @@
 -- Inliber
 -- https://github.com/paulpeters144/inliber.nvim
--- Uses OpenCode through the Agent Client Protocol (ACP), with
--- DeepSeek V4.1 Flash (opencode-go/deepseek-v4.1-flash) as the model.
+-- Grok speaks ACP itself: `grok agent stdio` (JSON-RPC on stdin/stdout).
+-- Inliber cancels tool-permission prompts, so the process is started
+-- with --always-approve. Auth uses the cached `grok login` token.
 
 local function opencode_adapter()
   return require('inliber.adapters').extend('opencode', {
@@ -11,6 +12,57 @@ local function opencode_adapter()
       },
     },
   })
+end
+
+local function grok_adapter()
+  local helpers = require('inliber.adapters.acp.helpers')
+  return {
+    name = 'grok',
+    formatted_name = 'Grok',
+    type = 'acp',
+    roles = {
+      llm = 'assistant',
+      user = 'user',
+    },
+    commands = {
+      default = {
+        'grok',
+        'agent',
+        '--always-approve',
+        '--model',
+        'grok-4.7-build-fast',
+        'stdio',
+      },
+    },
+    defaults = {
+      auth_method = 'cached_token',
+      mcpServers = {},
+      timeout = 20000,
+      session_config_options = {
+        model = 'grok-4.7-build-fast',
+        thought_level = 'low',
+      },
+    },
+    parameters = {
+      protocolVersion = 1,
+      clientCapabilities = {
+        fs = { readTextFile = true, writeTextFile = true },
+      },
+      clientInfo = {
+        name = 'Inliber.nvim',
+        version = '1.0.0',
+      },
+    },
+    handlers = {
+      setup = function()
+        return true
+      end,
+      form_messages = function(self, messages, capabilities)
+        return helpers.form_messages(self, messages, capabilities)
+      end,
+      on_exit = function() end,
+    },
+  }
 end
 
 return {
@@ -36,6 +88,7 @@ return {
         adapters = {
           acp = {
             opencode = opencode_adapter,
+            grok = grok_adapter,
           },
         },
         display = {
@@ -45,7 +98,7 @@ return {
         },
         interactions = {
           inline = {
-            adapter = 'opencode',
+            adapter = 'grok',
           },
         },
       }
