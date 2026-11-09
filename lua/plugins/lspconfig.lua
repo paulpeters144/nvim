@@ -111,6 +111,13 @@ return {
       local servers = {
         -- clangd = {},
         gopls = {
+          -- gopls v0.22 only offers "add tags" and "implement interface" when
+          -- the client advertises these. The prompts are handled in golang.lua.
+          capabilities = {
+            experimental = {
+              interactiveInputTypes = { 'string', 'enum', 'lazyEnum' },
+            },
+          },
           settings = {
             gopls = {
               hints = {
